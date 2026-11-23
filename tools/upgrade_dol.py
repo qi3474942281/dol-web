@@ -93,7 +93,7 @@ def main():
  remote='_ModLoader__WEBPACK_IMPORTED_MODULE_1__.ModDataLoadType.Remote,'
  assert game.count(remote)==1
  game=game.replace(remote,'/* DoLWeb: required mods are embedded; remote loader disabled. */',1)
- game=game.replace('<head>','<head>'+hook('modList.json?build='+BUILD,True)+'<script>'+ (ROOT/'art-preload.js').read_text()+'</script>',1)
+ game=game.replace('<head>','<head><meta charset="UTF-8">'+hook('modList.json?build='+BUILD,True)+'<script>'+ (ROOT/'art-preload.js').read_text()+'</script>',1)
  startup='window.modSC2DataManager.startInit()'
  assert game.count(startup)==1
  game=game.replace(startup,'window.dolPrepareArtPack().then(()=>window.modSC2DataManager.startInit())',1)

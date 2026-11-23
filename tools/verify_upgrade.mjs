@@ -80,7 +80,8 @@ try{
   for(const [kind,item] of Object.entries(samples)){
    const image=window.modGameOriginalImagePack.selfImg.get(item.path);
    if(!image)throw Error('Art asset unavailable: '+item.path);
-   const data=await image.getter.getBase64Image();
+   const data=await window.modImgLoaderHooker.getImage(item.path);
+   if(!data)throw Error('Renderer did not resolve art asset: '+item.path);
    const bytes=Uint8Array.from(atob(data.split(',')[1]),c=>c.charCodeAt(0));
    const digest=await crypto.subtle.digest('SHA-256',bytes);
    const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
