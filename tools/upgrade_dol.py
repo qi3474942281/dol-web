@@ -38,10 +38,14 @@ def main():
   b=base64.b64decode(value);z=zipfile.ZipFile(io.BytesIO(b));boot=json.loads(z.read('boot.json'))
   if boot['name'] in ['Cheat-Lyra','CombatStatusDisplay-Lyra']:
    legacy_mods[boot['name']]=z;(legacy/(boot['name']+'.mod.zip')).write_bytes(b)
- legacy_html=old.replace('<head>','<head>'+hook('legacy-modList.json'),1)
+ legacy_remote="\"modDataRemoteListPath\", 'modList.json'"
+ assert old.count(legacy_remote)==1
+ legacy_html=old.replace(legacy_remote,"\"modDataRemoteListPath\", 'legacy-modList.json'",1)
  (ROOT/'legacy.html').write_text(legacy_html)
  (ROOT/'legacy-modList.json').write_text('[]\n')
  z=zipfile.ZipFile(io.BytesIO(assets['DoL-ModLoader-0.5.12.13-v2.101.1.zip']))
+ for source,target in [('LICENSE','LICENSE'),('CREDITS.md','CREDITS.md'),('README.md','UPSTREAM-README.md')]:
+  (ROOT/target).write_bytes(z.read(source))
  game=z.read('Degrees of Lewdity.html').decode()
  assert 'version: "0.5.12.13"' in game
  stories=re.findall(r'<tw-storydata[^>]*>',game);assert len(stories)==1

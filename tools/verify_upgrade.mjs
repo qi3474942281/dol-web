@@ -2,7 +2,7 @@ import {chromium, webkit, devices} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 const kind=process.argv[2]||'chromium';
-const browser=await ({chromium,webkit}[kind]).launch({headless:true});
+const browser=await ({chromium,webkit}[kind]).launch({headless:true,...(process.env.DOL_CHROME?{executablePath:process.env.DOL_CHROME,args:['--no-sandbox']}: {})});
 const context=await browser.newContext({...devices['iPhone 13'],isMobile:true});
 await context.addInitScript(()=>localStorage.setItem('verifiedAge','true'));
 const page=await context.newPage();

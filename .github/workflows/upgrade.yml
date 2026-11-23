@@ -19,7 +19,7 @@ jobs:
         run: python tools/upgrade_dol.py
       - name: Save reproducible release files
         run: |
-          git add game.html legacy.html mods modList.json legacy-modList.json upstream-release.json
+          git add game.html legacy.html mods modList.json legacy-modList.json upstream-release.json LICENSE CREDITS.md UPSTREAM-README.md
           if ! git diff --cached --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
