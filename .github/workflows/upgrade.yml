@@ -1,0 +1,54 @@
+name: Build and verify Chinese upgrade
+on:
+  push:
+    branches: ['upgrade/chinese-051213']
+    paths-ignore: ['game.html', 'legacy.html', 'mods/**', 'modList.json', 'legacy-modList.json', 'upstream-release.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download, verify, and assemble official release
+        run: python tools/upgrade_dol.py
+      - name: Save reproducible release files
+        run: |
+          git add game.html legacy.html mods modList.json legacy-modList.json upstream-release.json
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'Install verified DoL 0.5.12.13 Chinese release and preserve legacy game'
+            git push origin HEAD:upgrade/chinese-051213
+          fi
+  browser:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: upgrade/chinese-051213
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save playwright@1.56.1
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Start local server
+        run: python -m http.server 8765 > /tmp/dol-server.log 2>&1 &
+      - name: Verify old-save migration and new Chinese release
+        run: node tools/verify_upgrade.mjs ${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-${{ matrix.browser }}
+          path: verification/
