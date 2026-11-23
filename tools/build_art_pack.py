@@ -24,7 +24,7 @@ def build_art_pack(original,source):
  files['LYRA-SOURCE-LICENSE']=art.read('LICENSE')
  files['LYRA-SOURCE-CREDITS.md']=art.read('CREDITS.md')
  files['boot.json']=json.dumps(boot,ensure_ascii=False,separators=(',',':')).encode()
- files['dist/preload/preload.js']+=('\nwindow.DOLWebArtReport='+json.dumps(report,ensure_ascii=False)+';\n').encode()
+ files['dist/preload/preload.js']=files['dist/preload/preload.js'].decode().replace('window.modGameOriginalImagePack.init();','window.modGameOriginalImagePack.init();\n    window.DOLWebArtReport='+json.dumps(report,ensure_ascii=False)+';').encode()
  files['BESC-UCB-CREDITS.md']=("Artwork from the version-matched DoL-Lyra BESC+UCB distribution.\nSources: https://gitgud.io/Frostberg/beeesss-community-compilation-revived and https://github.com/site098/mysterious\n").encode()
  out=io.BytesIO()
  with zipfile.ZipFile(out,'w',compression=zipfile.ZIP_DEFLATED) as z:

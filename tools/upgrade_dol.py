@@ -104,7 +104,7 @@ def main():
  game=game.replace(failure,error_js,1)
  main='window.mainStart();window.initI10n(l10nStrings);}).catch'
  assert game.count(main)==1
- game=game.replace(main,"window.DOLBootCheck={i18n:!!window.modI18N,language:window.modSC2DataManager.getLanguageManager().mainLanguage,compat:window.DOLWebCompatibilityReport,art:!!window.DOLWebArtReport,artImages:window.modGameOriginalImagePack?.selfImg?.size,mods:window.modDataValueZipList.length};if(!window.modI18N||window.modSC2DataManager.getLanguageManager().mainLanguage!=='zh'||!window.DOLWebCompatibilityReport||!window.DOLWebArtReport)throw Error('初始化校验未通过 '+JSON.stringify(window.DOLBootCheck));"+main,1)
+ game=game.replace(main,"window.DOLBootCheck={i18n:!!window.modI18N,language:window.modSC2DataManager.getLanguageManager().mainLanguage,compat:window.DOLWebCompatibilityReport,art:!!window.DOLWebArtReport,artImages:window.modGameOriginalImagePack?.selfImg?.size,mods:window.modDataValueZipList.length};if(!window.modI18N||window.modSC2DataManager.getLanguageManager().mainLanguage!=='zh'||!window.DOLWebCompatibilityReport||!window.DOLWebArtReport||window.modGameOriginalImagePack.selfImg.size!==window.DOLWebArtReport.images)throw Error('初始化校验未通过 '+JSON.stringify(window.DOLBootCheck));"+main,1)
  assert len(game.encode())<100*1024*1024, 'GitHub file size limit'
 
  (ROOT/'game.html').write_text(game)
