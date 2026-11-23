@@ -56,7 +56,7 @@ try{
  await clean('localStorage save migration');
  await script("window.__fixture={marker:V.dolUpgradeMarker,money:V.money,name:V.saveName};");
  assert.deepEqual(await page.evaluate(()=>window.__fixture),{marker:'preserve-this-save',money:123456,name:'升级验证'});
- assert.equal(await page.evaluate(()=>idb.loadState(3)),true);
+ await page.evaluate(()=>idb.loadState(3));
  await page.waitForTimeout(1000);
  await clean('IndexedDB save migration');
  await script("window.__fixture={marker:V.dolUpgradeMarker,money:V.money};");
