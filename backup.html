@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>升级前备份</title>
+<style>body{background:#111;color:#eee;font:18px/1.6 sans-serif;max-width:36em;padding:24px;margin:auto}button,a{font:inherit;color:#9cf}button{background:#222;padding:10px}</style>
+<h1>升级前备份</h1>
+<p>首次进入 0.5.12.13 汉化版 前，会在当前浏览器保留一份旧存档、设置和模组缓存的备份，后续进入不会覆盖它。备份只在本机保存，不会上传。</p>
+<p>下面下载的是用于恢复的 JSON 备份包，不能直接当作游戏的 .save 文件导入。游戏中的“存档 → 导出”仍可另外保留标准存档。</p>
+<button id="download">下载升级前备份</button><p id="status"></p>
+<p><a href="index.html">返回游戏</a> · <a href="legacy.html">打开旧版导出标准存档</a></p>
+<script src="save-backup.js?build=dol-051213-chs101a-1"></script>
+<script>
+document.getElementById('download').onclick=async()=>{
+  try {
+    const snapshot=await DOLBackup.read();
+    if(!snapshot) throw new Error('当前浏览器还没有升级前备份。请先从首页进入游戏。');
+    DOLBackup.download(snapshot);
+    document.getElementById('status').textContent='已准备下载。备份时间：'+snapshot.created;
+  } catch(e) { document.getElementById('status').textContent=e.message; }
+};
+</script></html>
