@@ -89,13 +89,20 @@ try{
  assert.deepEqual(freshErrors,[]);
  await fp.screenshot({path:'verification/'+kind+'-fresh-Chinese.png',fullPage:true});
  console.log('offline-cache:',await fp.evaluate(async()=>({controlled:!!navigator.serviceWorker.controller,caches:await caches.keys()})));
- await fresh.setOffline(true);
+ // Playwright WebKit's offline emulation rejects even literal service-worker responses.
+ // Stop the real origin instead, and prove it is unreachable outside the browser cache.
+ const offlineMode=kind==='webkit'?'origin-server-stopped':'browser-offline';
+ if(kind==='webkit'){
+  process.kill(Number((await fs.readFile('/tmp/dol-server.pid','utf8')).trim()),'SIGTERM');
+  await new Promise(r=>setTimeout(r,250));
+  await assert.rejects(fetch(url,{signal:AbortSignal.timeout(3000)}),'origin must be unreachable');
+ }else await fresh.setOffline(true);
  await fp.goto(url,{waitUntil:'domcontentloaded'});
  await fp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
  assert.match(await fp.locator('#passages').innerText(),/[\u4e00-\u9fff]{3}/);
  assert.equal(await fp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
  assert.deepEqual(freshErrors,[]);
- console.log('PASS cached offline restart',kind);
+ console.log('PASS cached offline restart',kind,offlineMode);
  await fresh.close();
  if(kind==='chromium'){
   await fs.copyFile('game.html','/tmp/dol-offline-smoke.html');
@@ -110,7 +117,7 @@ try{
   assert.equal(await dp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
   console.log('PASS standalone HTML without network');await disk.close();
  }
- await fs.writeFile('verification/'+kind+'.json',JSON.stringify({browser:kind,version:'0.5.12.13-chs-1.0.1a',bothSaveFormatsLoaded:true,freshChinese:true,offlineRestart:true,noExternalModDownloads:true,backup,images,errors},null,2));
+ await fs.writeFile('verification/'+kind+'.json',JSON.stringify({browser:kind,version:'0.5.12.13-chs-1.0.1a',bothSaveFormatsLoaded:true,freshChinese:true,offlineRestart:true,offlineMode,noExternalModDownloads:true,backup,images,errors},null,2));
  console.log('PASS',kind,JSON.stringify({backup,images,freshChinese:true,offlineRestart:true}));
 }catch(e){
  console.log('FAIL',kind,e.stack);

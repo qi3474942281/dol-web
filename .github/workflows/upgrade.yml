@@ -48,7 +48,9 @@ jobs:
       - run: npx playwright install --with-deps webkit
         if: matrix.browser == 'webkit'
       - name: Start local server
-        run: python -m http.server 8765 > /tmp/dol-server.log 2>&1 &
+        run: |
+          python -m http.server 8765 > /tmp/dol-server.log 2>&1 &
+          echo $! > /tmp/dol-server.pid
       - name: Verify old-save migration and new Chinese release
         run: node tools/verify_upgrade.mjs ${{ matrix.browser }}
       - uses: actions/upload-artifact@v4
