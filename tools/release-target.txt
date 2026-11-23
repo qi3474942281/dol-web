@@ -1,1 +1,2 @@
 v0.5.12.13-chs-1.0.1a
+verification: isolated legacy loader
