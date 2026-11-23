@@ -1,7 +1,9 @@
 {
   "tag": "v0.5.12.13-chs-1.0.1a",
-  "build": "dol-051213-chs101a-1",
+  "build": "dol-051213-chs101a-2",
   "source": "https://github.com/Eltirosto/Degrees-of-Lewdity-Chinese-Localization/releases/tag/v0.5.12.13-chs-1.0.1a",
+  "game_bytes": 101432865,
+  "offline_bytes": 41228603,
   "previous_commit": "c3cb029bfdb5ac5f620786bed7201a2bc47ef716",
   "previous_version": "0.5.0.6-chs-2.1.0a",
   "ifid": "A6AFB52D-38F2-4CB5-86A8-54BF665670D6",
@@ -20,7 +22,8 @@
     }
   },
   "deployed": {
-    "game.html": "681a05e1f335a2b295ca76b117fc5f475cd38cc855b7a60fff0690564f98fe03",
+    "game.html": "689c056c7ee21322065dc533ade66790dc72910063c59e661ef63d3e414939cf",
+    "dol-0.5.12.13-chs-1.0.1a-offline.zip": "726a16c207308e0ed6129999ba1213315ae5fef322d17128681c1ec47b5c5065",
     "legacy.html": "c56dbcb5f94346d1f44510084f5579b9cddd05b5d57167ae1089ee45e18e76b0",
     "mods/ModI18N.mod.zip": "af3950ec751442dbf6af5dac42ae3cee0fea67fc1944a836ffc8c3a8e5407be3",
     "mods/GameOriginalImagePack.mod.zip": "2281b8784f034ab8eb027cdca77019b626fbc50905bc2b18229f5e40ef152076",

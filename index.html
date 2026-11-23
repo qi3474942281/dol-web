@@ -1,12 +1,8 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Degrees of Lewdity 中文版</title>
-<style>body{background:#111;color:#eee;font:18px/1.7 system-ui,sans-serif;max-width:36em;margin:auto;padding:30px}a{color:#9cf}button{font:inherit;padding:.5em 1em;background:#292929;color:#eee;border:1px solid #777;border-radius:.3em}</style></head><body>
-<h1>Degrees of Lewdity 中文版</h1><p>游戏 0.5.12.13 · 汉化 chs-1.0.1a</p><p id="status" role="status">正在保留当前浏览器的升级前存档和设置……</p>
-<p><button id="retry" hidden>重试加载</button></p><p><a href="backup.html">下载升级前备份</a> · <a href="legacy.html">打开旧版导出存档</a></p>
-<script src="save-backup.js?build=dol-051213-chs101a-1"></script><script>
-async function start(){
- const status=document.getElementById('status'),button=document.getElementById('retry');button.hidden=true;
- try{await DOLBackup.ensure();status.textContent='备份已保留，正在载入最新汉化版……';location.replace('game.html?build=dol-051213-chs101a-1');}
- catch(e){status.textContent='未能完成备份：'+e.message+'。可先打开旧版导出存档，再重试。';button.hidden=false;}
-}
-document.getElementById('retry').onclick=start;start();
-</script></body></html>
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 完整汉化整合版</title><style>body{background:#111;color:#eee;font:17px/1.7 system-ui,sans-serif;max-width:38em;margin:auto;padding:24px}a{color:#9cf}button{font:inherit;padding:.65em 1em;background:#333;color:white;border:1px solid #777;border-radius:6px}progress{width:100%;height:24px}small{color:#bbb}#error{color:#ffbdad;white-space:pre-wrap}</style></head><body>
+<h1>DoL 完整汉化整合版</h1><p>游戏 0.5.12.13 · 汉化 chs-1.0.1a</p>
+<p id="status" role="status">正在检查本机游戏缓存……</p><progress id="progress" value="0" max="100"></progress><p id="detail"></p><p id="error" role="alert"></p>
+<button id="retry" hidden>重试下载</button><button id="play" hidden>进入游戏</button>
+<p><a href="dol-0.5.12.13-chs-1.0.1a-offline.zip" download>下载完整离线包（ZIP）</a></p>
+<p><small>汉化、图片和兼容 Mod 已内置。网页版首次下载完成后会保存在本机，再次打开优先使用缓存。下载 ZIP 后需先解压，再用能运行 JavaScript 的浏览器打开其中的 HTML。iPhone 推荐使用缓存后的网页版，“文件”预览通常不能运行游戏。</small></p>
+<p><a href="backup.html">存档备份</a> · <a href="legacy.html">打开旧版导出存档</a></p>
+<script src="save-backup.js?build=dol-051213-chs101a-2"></script><script src="install.js?build=dol-051213-chs101a-2"></script></body></html>
