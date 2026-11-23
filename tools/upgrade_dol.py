@@ -95,7 +95,7 @@ def main():
  game=game.replace(failure,error_js,1)
  main='window.mainStart();window.initI10n(l10nStrings);}).catch'
  assert game.count(main)==1
- game=game.replace(main,"if(!window.modI18N||!window.DOLWebCompatibilityReport)throw Error('内置汉化未完成初始化');"+main,1)
+ game=game.replace(main,"if(!window.modI18N||window.modSC2DataManager.getLanguageManager().mainLanguage!=='zh'||!window.DOLWebCompatibilityReport)throw Error('内置汉化未完成初始化');"+main,1)
  assert len(game.encode())<100*1024*1024, 'GitHub file size limit'
 
  (ROOT/'game.html').write_text(game)
