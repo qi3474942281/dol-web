@@ -4,6 +4,9 @@ on:
     branches: ['upgrade/chinese-051213']
     paths-ignore: ['game.html', 'legacy.html', 'mods/**', 'modList.json', 'legacy-modList.json', 'upstream-release.json']
   workflow_dispatch:
+concurrency:
+  group: dol-chinese-upgrade
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -42,7 +45,8 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-save playwright@1.56.1
-      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npx playwright install --with-deps webkit
+        if: matrix.browser == 'webkit'
       - name: Start local server
         run: python -m http.server 8765 > /tmp/dol-server.log 2>&1 &
       - name: Verify old-save migration and new Chinese release

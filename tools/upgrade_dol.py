@@ -74,7 +74,7 @@ def main():
 })();'''.replace('FIXES',json.dumps(fixes,ensure_ascii=False))
  boot={'name':'DoLWebCompatibility','version':'0.5.12.13.1','scriptFileList_earlyload':['earlyload.js'],'scriptFileList':[],
        'styleFileList':[],'tweeFileList':[],'imgFileList':[],
-       'dependenceInfo':[{'modName':'ModLoader','version':'^2.101.1'},{'modName':'ModI18N','version':'*'},{'modName':'GameVersion','version':'=0.5.12.13'}]}
+       'dependenceInfo':[{'modName':'ModLoader','version':'^2.101.1'},{'modName':'ModI18N','version':'>=0.0.0'},{'modName':'GameVersion','version':'=0.5.12.13'}]}
  (mods/'DoLWebCompatibility.mod.zip').write_bytes(archive({'boot.json':json.dumps(boot).encode(),'earlyload.js':js.encode()}))
  (mods/'ModI18N.mod.zip').write_bytes(assets['ModI18N-0.5.12.13-chs-1.0.1a.mod.zip'])
  (mods/'GameOriginalImagePack.mod.zip').write_bytes(assets['GameOriginalImagePack-0.5.12.13.mod.zip'])

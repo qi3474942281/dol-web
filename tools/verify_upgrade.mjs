@@ -2,7 +2,7 @@ import {chromium, webkit, devices} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 const kind=process.argv[2]||'chromium';
-const browser=await ({chromium,webkit}[kind]).launch({headless:true,...(process.env.DOL_CHROME?{executablePath:process.env.DOL_CHROME,args:['--no-sandbox']}: {})});
+const browser=await ({chromium,webkit}[kind]).launch({headless:true,...(process.env.DOL_CHROME?{executablePath:process.env.DOL_CHROME,args:['--no-sandbox']}:kind==='chromium'?{channel:'chrome'}: {})});
 const context=await browser.newContext({...devices['iPhone 13'],isMobile:true});
 await context.addInitScript(()=>localStorage.setItem('verifiedAge','true'));
 const page=await context.newPage();
@@ -13,7 +13,7 @@ await fs.mkdir('verification',{recursive:true});
 const script=async source=>page.evaluate(source=>SugarCube.Wikifier.wikifyEval('<<script>>'+source+'<</script>>'),source);
 async function ready(path){
  await page.goto(url+path,{waitUntil:'domcontentloaded',timeout:180000});
- await page.waitForFunction(()=>window.SugarCube?.State?.passage,{timeout:240000});
+ await page.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
  console.log('ready:',path,await page.evaluate(()=>SugarCube.State.passage));
 }
 async function clean(label){
@@ -28,7 +28,7 @@ try{
  await clean('old character');
  await script("State.create(State.passage);window.__oldId=Config.saves.id;window.__saved=Save.slots.save(0,'升级验证');");
  assert.equal(await page.evaluate(()=>window.__saved),true);
- await page.waitForFunction(()=>window.idb&&!idb.lock,{timeout:30000});
+ await page.waitForFunction(()=>window.idb&&!idb.lock,null,{timeout:30000});
  assert.equal(await page.evaluate(()=>idb.saveState(3)),true);
  const previous=await page.evaluate(()=>({id:window.__oldId,db:idb.dbName,details:localStorage.getItem('degrees-of-lewdity.save') }));
  console.log('old identifiers:',previous);
@@ -56,7 +56,7 @@ try{
  await clean('localStorage save migration');
  await script("window.__fixture={marker:V.dolUpgradeMarker,money:V.money,name:V.saveName};");
  assert.deepEqual(await page.evaluate(()=>window.__fixture),{marker:'preserve-this-save',money:123456,name:'升级验证'});
- await page.evaluate(()=>idb.loadState(3));
+ await page.evaluate(async()=>{await idb.getSaveDetails();await idb.loadState(3);});
  await page.waitForTimeout(1000);
  await clean('IndexedDB save migration');
  await script("window.__fixture={marker:V.dolUpgradeMarker,money:V.money};");
