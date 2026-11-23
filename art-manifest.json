@@ -1,0 +1,30 @@
+{
+  "mode": "BESC+UCB",
+  "source": "https://github.com/DoL-Lyra/Lyra/releases/download/v0.5.12.13-1.0.1a-1004.1/DoL-0.5.12.13-Lyra-1.0.1a-besc-ucb-1004.1.zip",
+  "tag": "v0.5.12.13-1.0.1a-1004.1",
+  "source_sha256": "47a793b1c06c36aea5388d9743d50f1ab2557deae6c4155f92cded5a237b7b70",
+  "images": 32779,
+  "replaced_original_images": 9688,
+  "samples": {
+    "body": {
+      "path": "img/body/base-classic.png",
+      "sha256": "a60813d1f43f0c25edac7f53cfc46bbca85dda6e90975a4d5dfba01bcc8a0d89"
+    },
+    "face": {
+      "path": "img/face/default/aloof/brow-low.png",
+      "sha256": "94ff6f0ae819f3c9b3eaba1b3c6c7f9030549f39d83c160d380037add4355ce0"
+    },
+    "hair": {
+      "path": "img/hair/back/afro pouf/feet.png",
+      "sha256": "ebefe70cb83dcb78b1f111464a2c78265cc27349703bfe55d8ce7961735d2501"
+    },
+    "clothes": {
+      "path": "img/clothes/belly/belly-mask-lower-shadow-2.png",
+      "sha256": "0e9653064eabacfef0b9a260e206f20cecc0f220eebef6aaa1e5b1651a626838"
+    },
+    "sex": {
+      "path": "img/sex/close/chest/0.png",
+      "sha256": "1cf1bee8862a6397135dbc1907227c484dc9c0d9798195fcab1030cbc93d0095"
+    }
+  }
+}
