@@ -2,8 +2,9 @@
 """Reproducible, hash-verified deployment of the official Chinese release."""
 import argparse,base64,hashlib,html,io,json,re,subprocess,urllib.request,zipfile
 from pathlib import Path
+from build_art_pack import build_art_pack,SOURCE_URL,SOURCE_SHA
 ROOT=Path(__file__).resolve().parents[1]
-BUILD='dol-051213-chs101a-2'
+BUILD='dol-051213-chs101a-3'
 BASE='c3cb029bfdb5ac5f620786bed7201a2bc47ef716'
 RELEASE='https://github.com/Eltirosto/Degrees-of-Lewdity-Chinese-Localization/releases/download/v0.5.12.13-chs-1.0.1a/'
 ASSETS={
@@ -24,7 +25,7 @@ def archive(files):
    info=zipfile.ZipInfo(name,(2026,11,23,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;z.writestr(info,data)
  return out.getvalue()
 def main():
- args=argparse.ArgumentParser();args.add_argument('--assets-dir',type=Path);opt=args.parse_args()
+ args=argparse.ArgumentParser();args.add_argument('--assets-dir',type=Path);args.add_argument('--art-source',type=Path);opt=args.parse_args()
  assets={}
  for name,sha in ASSETS.items():
   b=(opt.assets_dir/name).read_bytes() if opt.assets_dir else urllib.request.urlopen(RELEASE+name,timeout=180).read()
@@ -78,16 +79,24 @@ def main():
  (mods/'DoLWebCompatibility.mod.zip').write_bytes(archive({'boot.json':json.dumps(boot).encode(),'earlyload.js':js.encode()}))
  (mods/'ModI18N.mod.zip').write_bytes(assets['ModI18N-0.5.12.13-chs-1.0.1a.mod.zip'])
  (mods/'GameOriginalImagePack.mod.zip').write_bytes(assets['GameOriginalImagePack-0.5.12.13.mod.zip'])
+ art_source=opt.art_source.read_bytes() if opt.art_source else urllib.request.urlopen(SOURCE_URL,timeout=240).read()
+ art_pack,art_report=build_art_pack(assets['GameOriginalImagePack-0.5.12.13.mod.zip'],art_source)
+ assert len(art_pack)<100*1024*1024
+ (mods/'DoLWebArtPack.mod.zip').write_bytes(art_pack)
+ (ROOT/'art-manifest.json').write_text(json.dumps(art_report,ensure_ascii=False,indent=2)+'\n')
  # Ship every required archive inside the game, so boot never fetches remote ZIPs.
  local_match=re.search(r'window\.modDataValueZipList\s*=\s*(\[.*?\]);',game,re.S)
  local_mods=json.loads(local_match[1])
- for name in ['ModI18N.mod.zip','GameOriginalImagePack.mod.zip','DoLWebCompatibility.mod.zip']:
+ for name in ['ModI18N.mod.zip','DoLWebCompatibility.mod.zip']:
   local_mods.append(base64.b64encode((mods/name).read_bytes()).decode())
  game=game[:local_match.start(1)]+json.dumps(local_mods,separators=(',',':'))+game[local_match.end(1):]
  remote='_ModLoader__WEBPACK_IMPORTED_MODULE_1__.ModDataLoadType.Remote,'
  assert game.count(remote)==1
  game=game.replace(remote,'/* DoLWeb: required mods are embedded; remote loader disabled. */',1)
- game=game.replace('<head>','<head>'+hook('modList.json?build='+BUILD,True),1)
+ game=game.replace('<head>','<head>'+hook('modList.json?build='+BUILD,True)+'<script>'+ (ROOT/'art-preload.js').read_text()+'</script>',1)
+ startup='window.modSC2DataManager.startInit()'
+ assert game.count(startup)==1
+ game=game.replace(startup,'window.dolPrepareArtPack().then(()=>window.modSC2DataManager.startInit())',1)
  # Browsers must be able to report startup failure instead of leaving a permanent spinner.
  failure='catch(err => {console.error(err);});'
  assert game.count(failure)==1
@@ -95,25 +104,29 @@ def main():
  game=game.replace(failure,error_js,1)
  main='window.mainStart();window.initI10n(l10nStrings);}).catch'
  assert game.count(main)==1
- game=game.replace(main,"if(!window.modI18N||window.modSC2DataManager.getLanguageManager().mainLanguage!=='zh'||!window.DOLWebCompatibilityReport)throw Error('内置汉化未完成初始化');"+main,1)
+ game=game.replace(main,"if(!window.modI18N||window.modSC2DataManager.getLanguageManager().mainLanguage!=='zh'||!window.DOLWebCompatibilityReport||!window.DOLWebArtReport)throw Error('内置汉化未完成初始化');"+main,1)
  assert len(game.encode())<100*1024*1024, 'GitHub file size limit'
 
  (ROOT/'game.html').write_text(game)
+ offline_match=re.search(r'window\.modDataValueZipList\s*=\s*(\[.*?\]);',game,re.S)
+ offline_mods=json.loads(offline_match[1])+[base64.b64encode(art_pack).decode()]
+ offline_game=game[:offline_match.start(1)]+json.dumps(offline_mods,separators=(',',':'))+game[offline_match.end(1):]
+ offline_game=offline_game.replace('<head>','<head><script>window.DOLWebArtInline=true;</script>',1)
  offline_readme='''DoL 0.5.12.13-chs-1.0.1a 完整整合包
 
-先解压，再用支持 JavaScript 的浏览器打开「开始游戏.html」。汉化、原版图片、兼容 Mod 已内置，不需要下载额外 ZIP。
+先解压，再用支持 JavaScript 的浏览器打开「开始游戏.html」。汉化、BESC 人物美化、UCB 场景美化、兼容 Mod 已内置，不需要下载额外 ZIP。
 
 网页版与本地文件的存档空间不同。继续旧进度，请先在原网页的「存档」菜单导出标准存档文件，再在离线游戏中导入。不要清理浏览器网站数据。
 iPhone 的「文件」预览通常不能运行这种 HTML 游戏；iPhone 推荐使用原网址下载缓存后的网页版，可在断网后打开。
 
 首次启动仍需在设备上解压和初始化 Mod，请等待页面完成加载。
 '''
- (ROOT/'dol-0.5.12.13-chs-1.0.1a-offline.zip').write_bytes(archive({'开始游戏.html':game.encode(),'使用说明.txt':offline_readme.encode(),'LICENSE':z.read('LICENSE'),'CREDITS.md':z.read('CREDITS.md')}))
+ (ROOT/'dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip').write_bytes(archive({'开始游戏.html':offline_game.encode(),'使用说明.txt':offline_readme.encode(),'LICENSE':z.read('LICENSE'),'CREDITS.md':z.read('CREDITS.md')}))
  (ROOT/'modList.json').write_text(json.dumps([],indent=2)+'\n')
  release={'tag':'v0.5.12.13-chs-1.0.1a','build':BUILD,'source':'https://github.com/Eltirosto/Degrees-of-Lewdity-Chinese-Localization/releases/tag/v0.5.12.13-chs-1.0.1a',
-          'game_bytes':len(game.encode()),'offline_bytes':(ROOT/'dol-0.5.12.13-chs-1.0.1a-offline.zip').stat().st_size,'previous_commit':BASE,'previous_version':'0.5.0.6-chs-2.1.0a','ifid':new_ifid,
+          'game_bytes':len(game.encode()),'offline_bytes':(ROOT/'dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip').stat().st_size,'offline_url':'https://github.com/qi3474942281/dol-web/releases/download/dol-web-besc-ucb-3/dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip','artwork':art_report,'install_files':[{'path':'game.html','bytes':len(game.encode())},{'path':'mods/DoLWebArtPack.mod.zip','bytes':len(art_pack)}],'previous_commit':BASE,'previous_version':'0.5.0.6-chs-2.1.0a','ifid':new_ifid,
           'assets':{n:{'url':RELEASE+n,'sha256':sha} for n,sha in ASSETS.items()},
-          'deployed':{n:digest((ROOT/n).read_bytes()) for n in ['game.html','dol-0.5.12.13-chs-1.0.1a-offline.zip','legacy.html','mods/ModI18N.mod.zip','mods/GameOriginalImagePack.mod.zip','mods/DoLWebCompatibility.mod.zip']}}
+          'deployed':{n:digest((ROOT/n).read_bytes()) for n in ['game.html','dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip','mods/DoLWebArtPack.mod.zip','legacy.html','mods/ModI18N.mod.zip','mods/GameOriginalImagePack.mod.zip','mods/DoLWebCompatibility.mod.zip']}}
  (ROOT/'upstream-release.json').write_text(json.dumps(release,ensure_ascii=False,indent=2)+'\n')
  print(json.dumps({'version':release['tag'],'ifid_preserved':True,'legacy_mods':list(legacy_mods),'compatibility_patches':len(fixes),'game_bytes':len(game.encode())}))
 if __name__=='__main__':main()

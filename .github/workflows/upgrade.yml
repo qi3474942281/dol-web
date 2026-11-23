@@ -1,16 +1,18 @@
 name: Build and verify Chinese upgrade
 on:
   push:
-    branches: ['fix/offline-bundle']
-    paths-ignore: ['game.html', 'legacy.html', 'mods/**', 'modList.json', 'legacy-modList.json', 'upstream-release.json', 'dol-*.zip']
+    branches: ['feat/besc-ucb']
+    paths-ignore: ['game.html', 'legacy.html', 'mods/**', 'modList.json', 'legacy-modList.json', 'upstream-release.json', 'dol-*.zip', 'art-manifest.json']
   workflow_dispatch:
 concurrency:
-  group: dol-offline-bundle
+  group: dol-besc-ucb
   cancel-in-progress: true
 permissions:
   contents: read
 jobs:
   build:
+    outputs:
+      sha: ${{ steps.commit.outputs.sha }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -21,14 +23,22 @@ jobs:
       - name: Download, verify, and assemble official release
         run: python tools/upgrade_dol.py
       - name: Save reproducible release files
+        id: commit
         run: |
-          git add dol-*.zip game.html legacy.html mods modList.json legacy-modList.json upstream-release.json LICENSE CREDITS.md UPSTREAM-README.md
+          git add art-manifest.json game.html legacy.html mods modList.json legacy-modList.json upstream-release.json LICENSE CREDITS.md UPSTREAM-README.md
           if ! git diff --cached --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'Embed verified Chinese translation and images in an offline game bundle'
-            git push origin HEAD:fix/offline-bundle
+            git commit -m 'Install version-matched BESC and UCB artwork pack'
+            git push origin HEAD:feat/besc-ucb
           fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: offline-release
+          path: dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip
+          compression-level: 0
+          if-no-files-found: error
   browser:
     needs: build
     runs-on: ubuntu-24.04
@@ -40,7 +50,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: fix/offline-bundle
+          ref: feat/besc-ucb
+      - uses: actions/download-artifact@v4
+        if: matrix.browser == 'chromium'
+        with:
+          name: offline-release
+          path: release-download
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -58,3 +73,24 @@ jobs:
         with:
           name: verification-${{ matrix.browser }}
           path: verification/
+
+  release:
+    needs: [build, browser]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: offline-release
+          path: release-download
+      - name: Publish verified complete offline package
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ART_BUILD_SHA: ${{ needs.build.outputs.sha }}
+        run: |
+          if gh release view dol-web-besc-ucb-3 --repo qi3474942281/dol-web > /dev/null 2>&1; then
+            gh release upload dol-web-besc-ucb-3 release-download/*.zip --repo qi3474942281/dol-web --clobber
+          else
+            gh release create dol-web-besc-ucb-3 release-download/*.zip --repo qi3474942281/dol-web --target "$ART_BUILD_SHA" --prerelease --title 'DoL 0.5.12.13 Chinese + BESC + UCB' --notes 'Version-matched Chinese game with BESC character art and UCB scene art. Includes complete standalone HTML. Existing website saves require export/import when moving to local files. Artwork source: DoL-Lyra v0.5.12.13-1.0.1a-1004.1; credits and licenses included.'
+          fi

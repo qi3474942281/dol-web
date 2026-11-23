@@ -1,6 +1,7 @@
 import {chromium, webkit, devices} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
 const kind=process.argv[2]||'chromium';
 const browser=await ({chromium,webkit}[kind]).launch({headless:true,...(process.env.DOL_CHROME?{executablePath:process.env.DOL_CHROME,args:['--no-sandbox']}:kind==='chromium'?{channel:'chrome'}: {})});
 const context=await browser.newContext({...devices['iPhone 13'],isMobile:true});
@@ -43,7 +44,7 @@ try{
   });
  });
  await ready('');
- assert.match(page.url(),/game\.html\?build=dol-051213-chs101a-2/);
+ assert.match(page.url(),/game\.html\?build=dol-051213-chs101a-3/);
  assert.equal(await page.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
  await script("window.__configId=Config.saves.id;window.__gameVersion=StartConfig.version;window.__cheatPatched=!Story.get('StoryCaption').text.includes('and $cheatsEnabled is true or $debug is 1');");
  assert.equal(await page.evaluate(()=>window.__gameVersion),'0.5.12.13');
@@ -68,7 +69,34 @@ try{
   return {created:first.created,same:first.created===last.created,sentinel:last.localStorage['dol-upgrade-preserve'],session:last.sessionStorage['dol-upgrade-session'],saveKeys:Object.keys(last.saveDatabases['degrees-of-lewdity'].stores),saves:last.saveDatabases['degrees-of-lewdity'].stores.saves.length,mods:last.modCache.some(([k])=>k==='modDataIndexDBZipList'),current:localStorage.getItem('dol-upgrade-preserve')};
  });
  assert.equal(backup.same,true);assert.equal(backup.sentinel,'old-value');assert.equal(backup.session,'old-session');assert.ok(backup.saves>=1);assert.equal(backup.mods,true);assert.equal(backup.current,'new-value');
- assert.deepEqual(modRequests,[],'embedded boot must not fetch external mod ZIPs');
+ assert.equal(modRequests.length,1,'artwork downloaded exactly once');
+ assert.ok(modRequests[0].includes('/mods/DoLWebArtPack.mod.zip'),'only the complete artwork pack is downloaded');
+ const artManifest=JSON.parse(await fs.readFile('art-manifest.json','utf8'));
+ assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.mode),'BESC+UCB');
+ const artSamples=await page.evaluate(async samples=>{
+  const result={};
+  for(const [kind,item] of Object.entries(samples)){
+   const image=window.modGameOriginalImagePack.selfImg.get(item.path);
+   if(!image)throw Error('Art asset unavailable: '+item.path);
+   const data=await image.getter.getBase64Image();
+   const bytes=Uint8Array.from(atob(data.split(',')[1]),c=>c.charCodeAt(0));
+   const digest=await crypto.subtle.digest('SHA-256',bytes);
+   const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+   const decoded=new Image();decoded.src=data;await decoded.decode();
+   result[kind]={hash,width:decoded.naturalWidth,height:decoded.naturalHeight};
+  }
+  return result;
+ },artManifest.samples);
+ for(const [kind,item] of Object.entries(artManifest.samples)){assert.equal(artSamples[kind].hash,item.sha256);assert.ok(artSamples[kind].width>0);assert.ok(artSamples[kind].height>0);}
+ // Render ordinary clothed profiles after swapping both garment templates and hair styles.
+ await script("window.__artProfile={upper:clone(V.worn.upper),hair:V.hairtype};window.__hairVariants=setup.hairstyles.sides.map(h=>h.variable).filter(h=>typeof h==='string'&&h!==V.hairtype).slice(0,2);window.__shirtVariants=setup.clothes.upper.filter(c=>['school shirt','t-shirt','hoodie'].includes(c.name)).slice(0,2).map(c=>c.name);if(window.__shirtVariants.length<2)throw Error('Missing wardrobe fixtures');");
+ for(let i=0;i<2;i++){
+  await script("V.worn.upper=clone(setup.clothes.upper.find(c=>c.name===window.__shirtVariants["+i+"]));V.hairtype=window.__hairVariants["+i+"];Engine.play('Bedroom');");
+  await page.waitForTimeout(800);await clean('clothing and hair variation '+i);
+ }
+ await script("V.worn.upper=window.__artProfile.upper;V.hairtype=window.__artProfile.hair;Engine.play('Bedroom');");
+ await clean('restored character');
+ console.log('verified actual artwork assets:',JSON.stringify(artSamples));
  const images=await page.evaluate(()=>Array.from(document.images).filter(i=>i.complete&&i.naturalWidth>0).length);
  assert.ok(images>0,'official images loaded');
  await page.screenshot({path:'verification/'+kind+'.png',fullPage:true});
@@ -85,7 +113,7 @@ try{
  assert.ok((initial.match(/[\u4e00-\u9fff]/g)||[]).length>100,'fresh start and character settings translated');
  assert.ok(!initial.includes('This work of fiction contains content of a sexual nature'),'English intro must be translated');
  assert.equal(await fp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
- assert.deepEqual(freshModRequests,[]);
+ assert.equal(freshModRequests.length,1);assert.ok(freshModRequests[0].includes('/mods/DoLWebArtPack.mod.zip'));
  assert.deepEqual(freshErrors,[]);
  await fp.screenshot({path:'verification/'+kind+'-fresh-Chinese.png',fullPage:true});
  console.log('offline-cache:',await fp.evaluate(async()=>({controlled:!!navigator.serviceWorker.controller,caches:await caches.keys()})));
@@ -105,7 +133,7 @@ try{
  console.log('PASS cached offline restart',kind,offlineMode);
  await fresh.close();
  if(kind==='chromium'){
-  await fs.copyFile('game.html','/tmp/dol-offline-smoke.html');
+  execFileSync('python',['-c',"import json,zipfile,hashlib;from pathlib import Path;p=Path('release-download/dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip');m=json.loads(Path('upstream-release.json').read_text());assert hashlib.sha256(p.read_bytes()).hexdigest()==m['deployed'][p.name];z=zipfile.ZipFile(p);Path('/tmp/dol-offline-smoke.html').write_bytes(z.read('开始游戏.html'))"]);
   const disk=await browser.newContext();await disk.setOffline(true);
   await disk.addInitScript(()=>{try{localStorage.setItem('verifiedAge','true');}catch{}});
   const dp=await disk.newPage();
@@ -117,7 +145,7 @@ try{
   assert.equal(await dp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
   console.log('PASS standalone HTML without network');await disk.close();
  }
- await fs.writeFile('verification/'+kind+'.json',JSON.stringify({browser:kind,version:'0.5.12.13-chs-1.0.1a',bothSaveFormatsLoaded:true,freshChinese:true,offlineRestart:true,offlineMode,noExternalModDownloads:true,backup,images,errors},null,2));
+ await fs.writeFile('verification/'+kind+'.json',JSON.stringify({browser:kind,version:'0.5.12.13-chs-1.0.1a',bothSaveFormatsLoaded:true,freshChinese:true,offlineRestart:true,offlineMode,artworkCachedBeforeStartup:true,backup,images,errors},null,2));
  console.log('PASS',kind,JSON.stringify({backup,images,freshChinese:true,offlineRestart:true}));
 }catch(e){
  console.log('FAIL',kind,e.stack);
