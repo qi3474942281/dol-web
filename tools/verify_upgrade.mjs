@@ -5,7 +5,7 @@ const kind=process.argv[2]||'chromium';
 const browser=await ({chromium,webkit}[kind]).launch({headless:true,...(process.env.DOL_CHROME?{executablePath:process.env.DOL_CHROME,args:['--no-sandbox']}:kind==='chromium'?{channel:'chrome'}: {})});
 const context=await browser.newContext({...devices['iPhone 13'],isMobile:true});
 await context.addInitScript(()=>localStorage.setItem('verifiedAge','true'));
-const page=await context.newPage();
+const page=await context.newPage();let activePage=page;
 const modRequests=[];context.on('request',r=>{if(/\/mods\/.*\.zip/.test(r.url()))modRequests.push(r.url());});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error') console.log('browser-error:',m.text().slice(0,500));});
@@ -74,20 +74,21 @@ try{
  await page.screenshot({path:'verification/'+kind+'.png',fullPage:true});
  const fresh=await browser.newContext({...devices['iPhone 13'],isMobile:true});
  await fresh.addInitScript(()=>{localStorage.setItem('verifiedAge','true');});
- const fp=await fresh.newPage();
+ const fp=await fresh.newPage();activePage=fp;
  const freshErrors=[],freshModRequests=[];
  fp.on('pageerror',e=>freshErrors.push(e.message));
  fresh.on('request',r=>{if(/\/mods\/.*\.zip/.test(r.url()))freshModRequests.push(r.url());});
  await fp.goto(url,{waitUntil:'domcontentloaded'});
  await fp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
  const initial=await fp.locator('#passages').innerText();
- console.log('fresh-start:',initial.slice(0,650));
+ console.log('fresh-start:',initial.replace(/\s+/g,' ').trim().slice(0,650));
  assert.ok((initial.match(/[\u4e00-\u9fff]/g)||[]).length>100,'fresh start and character settings translated');
  assert.ok(!initial.includes('This work of fiction contains content of a sexual nature'),'English intro must be translated');
  assert.equal(await fp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
  assert.deepEqual(freshModRequests,[]);
  assert.deepEqual(freshErrors,[]);
  await fp.screenshot({path:'verification/'+kind+'-fresh-Chinese.png',fullPage:true});
+ console.log('offline-cache:',await fp.evaluate(async()=>({controlled:!!navigator.serviceWorker.controller,caches:await caches.keys()})));
  await fresh.setOffline(true);
  await fp.goto(url,{waitUntil:'domcontentloaded'});
  await fp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
@@ -113,8 +114,8 @@ try{
  console.log('PASS',kind,JSON.stringify({backup,images,freshChinese:true,offlineRestart:true}));
 }catch(e){
  console.log('FAIL',kind,e.stack);
- console.log('location:',page.url());
- console.log('passage:',(await page.locator('#passages').innerText().catch(()=>'' )).slice(0,1800));
- await page.screenshot({path:'verification/'+kind+'-failure.png',fullPage:true}).catch(()=>{});
+ console.log('location:',activePage.url());
+ console.log('passage:',(await activePage.locator('#passages').innerText().catch(()=>'' )).slice(0,1800));
+ await activePage.screenshot({path:'verification/'+kind+'-failure.png',fullPage:true}).catch(()=>{});
  throw e;
 }finally{await browser.close();}

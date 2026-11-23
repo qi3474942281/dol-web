@@ -15,7 +15,7 @@ self.addEventListener('fetch',event=>{
   event.respondWith((async()=>{const cache=await caches.open(CACHE);return await cache.match(game)||fetch(event.request);})());return;
  }
  if(u.pathname===base.pathname||u.pathname===new URL('index.html',base).pathname){
-  event.respondWith((async()=>{try{return await fetch(event.request);}catch(e){const response=await (await caches.open(CACHE)).match(page('index.html'));if(response)return response;throw e;}})());return;
+  event.respondWith((async()=>{const cache=await caches.open(CACHE);const response=await cache.match(page('index.html'));if(response)return response;return fetch(event.request);})());return;
  }
  if(['install.js','save-backup.js','backup.html'].some(n=>u.pathname===new URL(n,base).pathname)){
   event.respondWith((async()=>{const cache=await caches.open(CACHE);return await cache.match(event.request)||fetch(event.request);})());
