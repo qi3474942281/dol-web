@@ -1,11 +1,11 @@
 name: Build and verify Chinese upgrade
 on:
   push:
-    branches: ['upgrade/chinese-051213']
-    paths-ignore: ['game.html', 'legacy.html', 'mods/**', 'modList.json', 'legacy-modList.json', 'upstream-release.json']
+    branches: ['fix/offline-bundle']
+    paths-ignore: ['game.html', 'legacy.html', 'mods/**', 'modList.json', 'legacy-modList.json', 'upstream-release.json', 'dol-*.zip']
   workflow_dispatch:
 concurrency:
-  group: dol-chinese-upgrade
+  group: dol-offline-bundle
   cancel-in-progress: true
 permissions:
   contents: read
@@ -22,12 +22,12 @@ jobs:
         run: python tools/upgrade_dol.py
       - name: Save reproducible release files
         run: |
-          git add game.html legacy.html mods modList.json legacy-modList.json upstream-release.json LICENSE CREDITS.md UPSTREAM-README.md
+          git add dol-*.zip game.html legacy.html mods modList.json legacy-modList.json upstream-release.json LICENSE CREDITS.md UPSTREAM-README.md
           if ! git diff --cached --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'Install verified DoL 0.5.12.13 Chinese release and preserve legacy game'
-            git push origin HEAD:upgrade/chinese-051213
+            git commit -m 'Embed verified Chinese translation and images in an offline game bundle'
+            git push origin HEAD:fix/offline-bundle
           fi
   browser:
     needs: build
@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: upgrade/chinese-051213
+          ref: fix/offline-bundle
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

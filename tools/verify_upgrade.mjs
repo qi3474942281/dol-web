@@ -6,6 +6,7 @@ const browser=await ({chromium,webkit}[kind]).launch({headless:true,...(process.
 const context=await browser.newContext({...devices['iPhone 13'],isMobile:true});
 await context.addInitScript(()=>localStorage.setItem('verifiedAge','true'));
 const page=await context.newPage();
+const modRequests=[];context.on('request',r=>{if(/\/mods\/.*\.zip/.test(r.url()))modRequests.push(r.url());});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error') console.log('browser-error:',m.text().slice(0,500));});
 const url='http://127.0.0.1:8765/';
@@ -42,7 +43,7 @@ try{
   });
  });
  await ready('');
- assert.match(page.url(),/game\.html\?build=dol-051213-chs101a-1/);
+ assert.match(page.url(),/game\.html\?build=dol-051213-chs101a-2/);
  assert.equal(await page.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
  await script("window.__configId=Config.saves.id;window.__gameVersion=StartConfig.version;window.__cheatPatched=!Story.get('StoryCaption').text.includes('and $cheatsEnabled is true or $debug is 1');");
  assert.equal(await page.evaluate(()=>window.__gameVersion),'0.5.12.13');
@@ -67,11 +68,49 @@ try{
   return {created:first.created,same:first.created===last.created,sentinel:last.localStorage['dol-upgrade-preserve'],session:last.sessionStorage['dol-upgrade-session'],saveKeys:Object.keys(last.saveDatabases['degrees-of-lewdity'].stores),saves:last.saveDatabases['degrees-of-lewdity'].stores.saves.length,mods:last.modCache.some(([k])=>k==='modDataIndexDBZipList'),current:localStorage.getItem('dol-upgrade-preserve')};
  });
  assert.equal(backup.same,true);assert.equal(backup.sentinel,'old-value');assert.equal(backup.session,'old-session');assert.ok(backup.saves>=1);assert.equal(backup.mods,true);assert.equal(backup.current,'new-value');
+ assert.deepEqual(modRequests,[],'embedded boot must not fetch external mod ZIPs');
  const images=await page.evaluate(()=>Array.from(document.images).filter(i=>i.complete&&i.naturalWidth>0).length);
  assert.ok(images>0,'official images loaded');
  await page.screenshot({path:'verification/'+kind+'.png',fullPage:true});
- await fs.writeFile('verification/'+kind+'.json',JSON.stringify({browser:kind,version:'0.5.12.13-chs-1.0.1a',bothSaveFormatsLoaded:true,backup,images,errors},null,2));
- console.log('PASS',kind,JSON.stringify({backup,images}));
+ const fresh=await browser.newContext({...devices['iPhone 13'],isMobile:true});
+ await fresh.addInitScript(()=>{localStorage.setItem('verifiedAge','true');});
+ const fp=await fresh.newPage();
+ const freshErrors=[],freshModRequests=[];
+ fp.on('pageerror',e=>freshErrors.push(e.message));
+ fresh.on('request',r=>{if(/\/mods\/.*\.zip/.test(r.url()))freshModRequests.push(r.url());});
+ await fp.goto(url,{waitUntil:'domcontentloaded'});
+ await fp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
+ const initial=await fp.locator('#passages').innerText();
+ console.log('fresh-start:',initial.slice(0,650));
+ assert.ok((initial.match(/[\u4e00-\u9fff]/g)||[]).length>100,'fresh start and character settings translated');
+ assert.ok(!initial.includes('This work of fiction contains content of a sexual nature'),'English intro must be translated');
+ assert.equal(await fp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
+ assert.deepEqual(freshModRequests,[]);
+ assert.deepEqual(freshErrors,[]);
+ await fp.screenshot({path:'verification/'+kind+'-fresh-Chinese.png',fullPage:true});
+ await fresh.setOffline(true);
+ await fp.goto(url,{waitUntil:'domcontentloaded'});
+ await fp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
+ assert.match(await fp.locator('#passages').innerText(),/[\u4e00-\u9fff]{3}/);
+ assert.equal(await fp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
+ assert.deepEqual(freshErrors,[]);
+ console.log('PASS cached offline restart',kind);
+ await fresh.close();
+ if(kind==='chromium'){
+  await fs.copyFile('game.html','/tmp/dol-offline-smoke.html');
+  const disk=await browser.newContext();await disk.setOffline(true);
+  await disk.addInitScript(()=>{try{localStorage.setItem('verifiedAge','true');}catch{}});
+  const dp=await disk.newPage();
+  await dp.goto('file:///tmp/dol-offline-smoke.html',{waitUntil:'domcontentloaded',timeout:120000});
+  await dp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
+  const text=await dp.locator('#passages').innerText();
+  assert.ok(!text.includes('This work of fiction contains content of a sexual nature'));
+  assert.ok((text.match(/[\u4e00-\u9fff]/g)||[]).length>100,'standalone HTML Chinese');
+  assert.equal(await dp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
+  console.log('PASS standalone HTML without network');await disk.close();
+ }
+ await fs.writeFile('verification/'+kind+'.json',JSON.stringify({browser:kind,version:'0.5.12.13-chs-1.0.1a',bothSaveFormatsLoaded:true,freshChinese:true,offlineRestart:true,noExternalModDownloads:true,backup,images,errors},null,2));
+ console.log('PASS',kind,JSON.stringify({backup,images,freshChinese:true,offlineRestart:true}));
 }catch(e){
  console.log('FAIL',kind,e.stack);
  console.log('location:',page.url());
