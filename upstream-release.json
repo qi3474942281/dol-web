@@ -2,8 +2,8 @@
   "tag": "v0.5.12.13-chs-1.0.1a",
   "build": "dol-051213-chs101a-3",
   "source": "https://github.com/Eltirosto/Degrees-of-Lewdity-Chinese-Localization/releases/tag/v0.5.12.13-chs-1.0.1a",
-  "game_bytes": 83137287,
-  "offline_bytes": 105619059,
+  "game_bytes": 83137309,
+  "offline_bytes": 105619069,
   "offline_url": "https://github.com/qi3474942281/dol-web/releases/download/dol-web-besc-ucb-3/dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip",
   "artwork": {
     "mode": "BESC+UCB",
@@ -38,7 +38,7 @@
   "install_files": [
     {
       "path": "game.html",
-      "bytes": 83137287
+      "bytes": 83137309
     },
     {
       "path": "mods/DoLWebArtPack.mod.zip",
@@ -63,8 +63,8 @@
     }
   },
   "deployed": {
-    "game.html": "211b50485919056db861c88b10d246e6a64fd833f71317cafa46a9f72e83e51b",
-    "dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip": "f5e1b573ae0f8810b5f2f9c9916d337bd56eb0115c7763b44d075cf841427f86",
+    "game.html": "9408de035994247cb7bf92d2820124e49fcd6f42908a9b9666e0cf03a5da43a4",
+    "dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip": "168e7e23585a2713749ac6483b0e2fec276e08c37c62c5e292344ac8c416ff85",
     "mods/DoLWebArtPack.mod.zip": "9d56bb5d1bc81cf0f10d53ab2e75a43fdb47cb6726603e309a08a5c5b6b6fe51",
     "legacy.html": "c56dbcb5f94346d1f44510084f5579b9cddd05b5d57167ae1089ee45e18e76b0",
     "mods/ModI18N.mod.zip": "af3950ec751442dbf6af5dac42ae3cee0fea67fc1944a836ffc8c3a8e5407be3",
