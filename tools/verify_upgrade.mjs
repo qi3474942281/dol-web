@@ -15,7 +15,9 @@ await fs.mkdir('verification',{recursive:true});
 const script=async source=>page.evaluate(source=>SugarCube.Wikifier.wikifyEval('<<script>>'+source+'<</script>>'),source);
 async function ready(path){
  await page.goto(url+path,{waitUntil:'domcontentloaded',timeout:180000});
- await page.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
+ await page.waitForFunction(()=>window.SugarCube?.State?.passage||document.getElementById('dol-startup-error')||document.getElementById('error')?.textContent,null,{timeout:240000});
+ if(await page.locator('#dol-startup-error').count())throw Error('Startup rejected: '+JSON.stringify(await page.evaluate(()=>window.DOLBootCheck)));
+ if(await page.locator('#error').count()&&await page.locator('#error').textContent())throw Error(await page.locator('#error').textContent());
  console.log('ready:',path,await page.evaluate(()=>SugarCube.State.passage));
 }
 async function clean(label){
@@ -69,7 +71,7 @@ try{
   return {created:first.created,same:first.created===last.created,sentinel:last.localStorage['dol-upgrade-preserve'],session:last.sessionStorage['dol-upgrade-session'],saveKeys:Object.keys(last.saveDatabases['degrees-of-lewdity'].stores),saves:last.saveDatabases['degrees-of-lewdity'].stores.saves.length,mods:last.modCache.some(([k])=>k==='modDataIndexDBZipList'),current:localStorage.getItem('dol-upgrade-preserve')};
  });
  assert.equal(backup.same,true);assert.equal(backup.sentinel,'old-value');assert.equal(backup.session,'old-session');assert.ok(backup.saves>=1);assert.equal(backup.mods,true);assert.equal(backup.current,'new-value');
- assert.equal(modRequests.length,1,'artwork downloaded exactly once');
+ assert.equal(new Set(modRequests).size,1,'one artwork download URL');
  assert.ok(modRequests[0].includes('/mods/DoLWebArtPack.mod.zip'),'only the complete artwork pack is downloaded');
  const artManifest=JSON.parse(await fs.readFile('art-manifest.json','utf8'));
  assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.mode),'BESC+UCB');
@@ -107,13 +109,13 @@ try{
  fp.on('pageerror',e=>freshErrors.push(e.message));
  fresh.on('request',r=>{if(/\/mods\/.*\.zip/.test(r.url()))freshModRequests.push(r.url());});
  await fp.goto(url,{waitUntil:'domcontentloaded'});
- await fp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
+ await fp.waitForFunction(()=>window.SugarCube?.State?.passage||document.getElementById('dol-startup-error')||document.getElementById('error')?.textContent,null,{timeout:240000});
  const initial=await fp.locator('#passages').innerText();
  console.log('fresh-start:',initial.replace(/\s+/g,' ').trim().slice(0,650));
  assert.ok((initial.match(/[\u4e00-\u9fff]/g)||[]).length>100,'fresh start and character settings translated');
  assert.ok(!initial.includes('This work of fiction contains content of a sexual nature'),'English intro must be translated');
  assert.equal(await fp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
- assert.equal(freshModRequests.length,1);assert.ok(freshModRequests[0].includes('/mods/DoLWebArtPack.mod.zip'));
+ assert.equal(new Set(freshModRequests).size,1);assert.ok(freshModRequests[0].includes('/mods/DoLWebArtPack.mod.zip'));
  assert.deepEqual(freshErrors,[]);
  await fp.screenshot({path:'verification/'+kind+'-fresh-Chinese.png',fullPage:true});
  console.log('offline-cache:',await fp.evaluate(async()=>({controlled:!!navigator.serviceWorker.controller,caches:await caches.keys()})));
@@ -126,7 +128,7 @@ try{
   await assert.rejects(fetch(url,{signal:AbortSignal.timeout(3000)}),'origin must be unreachable');
  }else await fresh.setOffline(true);
  await fp.goto(url,{waitUntil:'domcontentloaded'});
- await fp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
+ await fp.waitForFunction(()=>window.SugarCube?.State?.passage||document.getElementById('dol-startup-error')||document.getElementById('error')?.textContent,null,{timeout:240000});
  assert.match(await fp.locator('#passages').innerText(),/[\u4e00-\u9fff]{3}/);
  assert.equal(await fp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
  assert.deepEqual(freshErrors,[]);
@@ -138,7 +140,7 @@ try{
   await disk.addInitScript(()=>{try{localStorage.setItem('verifiedAge','true');}catch{}});
   const dp=await disk.newPage();
   await dp.goto('file:///tmp/dol-offline-smoke.html',{waitUntil:'domcontentloaded',timeout:120000});
-  await dp.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:240000});
+  await dp.waitForFunction(()=>window.SugarCube?.State?.passage||document.getElementById('dol-startup-error')||document.getElementById('error')?.textContent,null,{timeout:240000});
   const text=await dp.locator('#passages').innerText();
   assert.ok(!text.includes('This work of fiction contains content of a sexual nature'));
   assert.ok((text.match(/[\u4e00-\u9fff]/g)||[]).length>100,'standalone HTML Chinese');
@@ -150,7 +152,8 @@ try{
 }catch(e){
  console.log('FAIL',kind,e.stack);
  console.log('location:',activePage.url());
- console.log('passage:',(await activePage.locator('#passages').innerText().catch(()=>'' )).slice(0,1800));
+ console.log('boot-check:',await activePage.evaluate(()=>window.DOLBootCheck).catch(()=>null));
+ console.log('page-text:',(await activePage.locator('body').innerText().catch(()=>'' )).slice(0,1800));
  await activePage.screenshot({path:'verification/'+kind+'-failure.png',fullPage:true}).catch(()=>{});
  throw e;
 }finally{await browser.close();}

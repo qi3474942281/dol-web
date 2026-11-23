@@ -100,11 +100,11 @@ def main():
  # Browsers must be able to report startup failure instead of leaving a permanent spinner.
  failure='catch(err => {console.error(err);});'
  assert game.count(failure)==1
- error_js="""catch(err => {console.error(err);const box=document.createElement('div');box.style='position:fixed;z-index:2147483647;inset:0;background:#111;color:white;padding:24px';box.textContent='游戏初始化失败。请返回首页重试，或打开旧版导出存档。';for(const [href,label] of [['index.html','返回首页'],['legacy.html','打开旧版']]){const a=document.createElement('a');a.href=href;a.textContent=label;a.style='display:block;color:#9cf;padding:12px';box.append(a);}document.body.prepend(box);});"""
+ error_js="""catch(err => {console.error(err);const box=document.createElement('div');box.id='dol-startup-error';box.style='position:fixed;z-index:2147483647;inset:0;background:#111;color:white;padding:24px';box.textContent='游戏初始化失败。请返回首页重试，或打开旧版导出存档。';for(const [href,label] of [['index.html','返回首页'],['legacy.html','打开旧版']]){const a=document.createElement('a');a.href=href;a.textContent=label;a.style='display:block;color:#9cf;padding:12px';box.append(a);}document.body.prepend(box);});"""
  game=game.replace(failure,error_js,1)
  main='window.mainStart();window.initI10n(l10nStrings);}).catch'
  assert game.count(main)==1
- game=game.replace(main,"if(!window.modI18N||window.modSC2DataManager.getLanguageManager().mainLanguage!=='zh'||!window.DOLWebCompatibilityReport||!window.DOLWebArtReport)throw Error('内置汉化未完成初始化');"+main,1)
+ game=game.replace(main,"window.DOLBootCheck={i18n:!!window.modI18N,language:window.modSC2DataManager.getLanguageManager().mainLanguage,compat:window.DOLWebCompatibilityReport,art:!!window.DOLWebArtReport,artImages:window.modGameOriginalImagePack?.selfImg?.size,mods:window.modDataValueZipList.length};if(!window.modI18N||window.modSC2DataManager.getLanguageManager().mainLanguage!=='zh'||!window.DOLWebCompatibilityReport||!window.DOLWebArtReport)throw Error('初始化校验未通过 '+JSON.stringify(window.DOLBootCheck));"+main,1)
  assert len(game.encode())<100*1024*1024, 'GitHub file size limit'
 
  (ROOT/'game.html').write_text(game)
