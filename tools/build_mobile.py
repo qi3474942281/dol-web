@@ -66,7 +66,7 @@ preload='''(async()=>{
      for(let i=0;i<bytes.length;i+=32768)pieces.push(String.fromCharCode(...bytes.subarray(i,i+32768)));
      const ext=file.slice(file.lastIndexOf('.'));const mime={'.png':'image/png','.gif':'image/gif','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml'}[ext]||'application/octet-stream';
      return 'data:'+mime+';base64,'+btoa(pieces.join(''));
-    }catch(error){if(error.rateLimited)throw error;last=error;await new Promise(resolve=>setTimeout(resolve,300*(attempt+1)));}
+    }catch(error){if(error.rateLimited)return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';last=error;await new Promise(resolve=>setTimeout(resolve,300*(attempt+1)));}
    }throw last;
   })().catch(error=>{imageCache.delete(file);throw error;});
   imageCache.set(file,task);while(imageCache.size>256)imageCache.delete(imageCache.keys().next().value);

@@ -36,7 +36,7 @@
 
 ## 手机分块加载（mobile-6）
 
-`mobile.html` 是约 1KB 的加载入口，不直接导航到 83MB 游戏文档。游戏文档按独立 gzip 小文件加载并校验、解压，再写入同一 origin 和 URL 的文档；模组 ZIP 也分成不超过 512KB 的资源，失败可自动重试。初始必需资源约 33MB，完成的资源使用浏览器正常 HTTP 缓存，不依赖 Service Worker 或 CacheStorage。
+`mobile.html` 是几 KB 的加载入口，不直接导航到 83MB 游戏文档。游戏文档按独立 gzip 小文件加载并校验、解压，再写入同一 origin 和 URL 的文档；模组 ZIP 也分成不超过 512KB 的资源，失败可自动重试。初始必需资源约 33MB，完成的资源使用浏览器正常 HTTP 缓存，不依赖 Service Worker 或 CacheStorage。
 
 BESC/UCB 图片保持原图字节，使用去重的静态文件按显示需要加载，不在启动前下载整个 80MB 图片包。游戏、汉化、兼容补丁、存档 ID 和 IndexedDB 名保持不变，旧完整入口和离线包仍保留。构建脚本为 `tools/build_mobile.py`；测试覆盖断连重试、两种真实旧存档、汉化、静态人物/服装/场景图的哈希，以及禁用缓存组件时的启动。
 
