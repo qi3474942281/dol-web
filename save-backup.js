@@ -31,8 +31,15 @@
     try { return await request(db.transaction(STORE).objectStore(STORE).get(KEY)); }
     finally { db.close(); }
   }
+  async function exists() {
+    // A snapshot can contain large mod archives. Do not clone its contents just
+    // to check it exists: that can exhaust memory on mobile Safari at startup.
+    const db = await open(DB, STORE);
+    try { return (await request(db.transaction(STORE).objectStore(STORE).count(KEY))) > 0; }
+    finally { db.close(); }
+  }
   async function ensure() {
-    if (await read()) return;
+    if (await exists()) return;
     // Capture browser storage before even downloading/replacing bundled mods.
     const snapshot = {
       schema: 1, target: '0.5.12.13-chs-1.0.1a', created: new Date().toISOString(),
@@ -76,14 +83,14 @@
       await new Promise((resolve, reject) => {
         const tx = db.transaction(STORE, 'readwrite');
         const store = tx.objectStore(STORE);
-        const req = store.get(KEY);
+        const req = store.count(KEY);
         req.onsuccess = () => { if (!req.result) store.add(snapshot, KEY); };
         tx.oncomplete = resolve;
         tx.onerror = () => reject(tx.error);
         tx.onabort = () => reject(tx.error || new Error('保存升级前备份失败'));
       });
     } finally { db.close(); }
-    if (!(await read())) throw new Error('升级前备份校验失败');
+    if (!(await exists())) throw new Error('升级前备份校验失败');
   }
   function download(snapshot) {
     // Preserve binary mod archives, too. This is a recovery bundle, not a

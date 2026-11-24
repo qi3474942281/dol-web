@@ -1,0 +1,26 @@
+name: Verify mobile startup repair
+on:
+  push:
+    branches: ['fix/mobile-startup']
+    paths: ['install.js', 'save-backup.js', 'sw.js', '*html', 'tools/verify_startup*.mjs', '.github/workflows/startup.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  startup:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tools/verify_startup.mjs
+      - run: npm install --no-save playwright@1.56.1
+      - run: npx playwright install --with-deps webkit
+        if: matrix.browser == 'webkit'
+      - run: python -m http.server 8765 > /tmp/dol-startup-server.log 2>&1 &
+      - run: node tools/verify_startup_browser.mjs ${{ matrix.browser }}
