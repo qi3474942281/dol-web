@@ -1,53 +1,16 @@
-name: Validate and publish single-HTML mobile v9
+name: Inspect clothing coverage report
 on:
   push:
     branches: ['release/offline-clothing-audit']
 permissions:
   contents: read
-concurrency:
-  group: offline-clothing-audit-release
-  cancel-in-progress: false
 jobs:
-  verify:
+  report:
     runs-on: ubuntu-24.04
-    container: mcr.microsoft.com/playwright:v1.56.1-noble
-    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Build and check the offline archive
-        run: |
-          mkdir -p release-offline /tmp/dol-offline
-          python3 tools/build_audit.py . release-offline/DoL-0.5.12.13-BESC-UCB-Offline-Clothing-Audit.zip
-          cd release-offline
-          python3 ../tools/verify_audit.py ..
-          python3 -m zipfile -e DoL-0.5.12.13-BESC-UCB-Offline-Clothing-Audit.zip /tmp/dol-offline
-          sha256sum DoL-0.5.12.13-BESC-UCB-Offline-Clothing-Audit.zip > SHA256SUMS.txt
-      - run: npm install --no-save playwright@1.56.1
-      - name: Test WebKit startup without internet access
-        run: |
-          python3 -m http.server 8765 --bind 127.0.0.1 --directory /tmp/dol-offline &
-          node tools/verify_audit_browser.mjs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: offline-clothing-audit-verified
-          path: release-offline/
-          compression-level: 0
-  publish:
-    needs: verify
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: offline-clothing-audit-verified
-      - name: Publish direct download
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          sha256sum -c SHA256SUMS.txt
-          gh release create dol-web-offline-clothing-audit DoL-0.5.12.13-BESC-UCB-Offline-Clothing-Audit.zip SHA256SUMS.txt clothing-audit.json --target 13d8ab1d17137314e896f1412676b112025f6945 --title 'DoL 0.5.12.13 BESC/UCB 单 HTML 服装兼容版' --notes '主人物及商店试穿使用同版原图，保留场景美化、汉化和城镇底图修复。全部模组内置于「开始游戏.html」。iPhone 解压后使用 TinyServer 打开它。' --latest=false
+      - run: |
+          gh release download dol-web-offline-clothing-audit --pattern clothing-audit.json
+          cat clothing-audit.json
