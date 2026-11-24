@@ -128,6 +128,6 @@ try{
  await fs.writeFile('verification/mobile-'+kind+'.json',JSON.stringify({browser:kind,saveId,samples,chunkRequests,artRequests:new Set(images).size,report:await page.evaluate(()=>window.DOLMobileLoadReport)},null,2));
  console.log('PASS',kind,'real old local/IndexedDB saves preserved; Chinese + 32779 lazy art entries; interrupted chunk retried; no worker/cache dependency or monolithic HTML/ZIP download.');
 }catch(error){
- console.log('FAILURE PAGE',page.url());console.log(await page.evaluate(()=>({body:document.body?.innerText.slice(0,1800),check:window.DOLBootCheck,report:window.DOLMobileLoadReport})).catch(()=>({})));
+ console.log('FAILURE PAGE',page.url());console.log(await page.evaluate(()=>({body:document.body?.innerText.slice(0,1800),check:window.DOLBootCheck,report:window.DOLMobileLoadReport,wardrobePatch:window.DOLWardrobeCapacity&&{keys:Object.keys(window.DOLWardrobeCapacity),error:window.DOLWardrobeCapacity.patchError}})).catch(()=>({})));
  throw error;
 }finally{await browser.close();}

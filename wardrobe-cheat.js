@@ -19,6 +19,7 @@
   apply(vars);
  };
  window.DOLWardrobeCapacity={info,apply,change};
+ try {
  const manager=window.modSC2DataManager,previous=manager.getSC2DataInfoAfterPatch(),patched=previous.cloneSC2DataInfo();
  const cheats=patched.passageDataItems.items.find(p=>p.name==='Cheats');
  const marker='<<widget "cheats-other">>';
@@ -48,4 +49,5 @@
  patched.passageDataItems.fillMap();patched.scriptFileItems.fillMap();
  manager.getModUtils().replaceFollowSC2DataInfo(patched,previous);
  window.DOLWardrobeCapacity.patchReport={menu:true,furniture:true};
+ } catch(error) {window.DOLWardrobeCapacity.patchError=error.message;console.error("Wardrobe capacity patch:",error);throw error;}
 })();
