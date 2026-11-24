@@ -42,17 +42,35 @@ else:raise ValueError('Existing compatibility mod missing')
 art=zipfile.ZipFile(ROOT/'mods/DoLWebArtPack.mod.zip');boot=json.loads(art.read('boot.json'))
 images=boot['imgFileList'];assert len(images)==32779
 mapping=[];unique={}
-for path in images:
- b=art.read(path);ext=Path(path).suffix.lower();ext=ext if ext in {'.png','.gif','.jpg','.jpeg','.webp','.svg'} else '.txt'
- name=sha(b)+ext;mapping.append([path,name])
+def publish_image(path, data):
+ ext=Path(path).suffix.lower()
+ ext=ext if ext in {'.png','.gif','.jpg','.jpeg','.webp','.svg'} else '.txt'
+ name=sha(data)+ext
  if name not in unique:
-  p=OUT/'art'/name;p.parent.mkdir(exist_ok=True);p.write_bytes(b);unique[name]=len(b)
+  p=OUT/'art'/name;p.parent.mkdir(exist_ok=True);p.write_bytes(data);unique[name]=len(data)
+ return name
+for path in images:
+ mapping.append([path,publish_image(path,art.read(path))])
+mobile_files=dict(mapping)
+original=zipfile.ZipFile(ROOT/'mods/GameOriginalImagePack.mod.zip')
+variants={}
+legacy_clothes=[]
+for path in original.namelist():
+ if path not in mobile_files or not path.startswith(('img/body/','img/face/','img/hair/','img/clothes/','img/transformations/','img/genitals/')):
+  continue
+ data=original.read(path)
+ if sha(data)!=mobile_files[path].split('.')[0]:
+  variants[path]=publish_image(path,data)
+ elif path.startswith('img/clothes/') and path.endswith('/full.png') and data.startswith(b'\x89PNG') and int.from_bytes(data[20:24],'big')==128:
+  legacy_clothes.append(path.removesuffix('/full.png'))
+town='img/misc/locations/town/base.png'
+embedded={mobile_files[town]:'data:image/png;base64,'+base64.b64encode(art.read(town)).decode()}
 files={n:art.read(n) for n in art.namelist() if not n.startswith('img/') and not n.endswith('/') and not n.endswith('.map')}
 boot['imgFileList']=[]
-boot['version']='0.5.12.13.3'
+boot['version']='0.5.12.13.4'
 files['boot.json']=json.dumps(boot,ensure_ascii=False,separators=(',',':')).encode()
 report=json.loads((ROOT/'art-manifest.json').read_text());report['delivery']='static-on-demand'
-preload=(ROOT/'mobile-art.js').read_text().replace('MAPPING',json.dumps(mapping,ensure_ascii=False,separators=(',',':'))).replace('REPORT',json.dumps(report,ensure_ascii=False,separators=(',',':')))
+preload=(ROOT/'mobile-art.js').read_text().replace('MAPPING',json.dumps(mapping,ensure_ascii=False,separators=(',',':'))).replace('ORIGINAL_VARIANTS',json.dumps(variants,separators=(',',':'))).replace('LEGACY_CLOTHES',json.dumps(legacy_clothes,separators=(',',':'))).replace('EMBEDDED_IMAGES',json.dumps(embedded,separators=(',',':'))).replace('REPORT',json.dumps(report,ensure_ascii=False,separators=(',',':')))
 files['dist/preload/preload.js']=preload.encode()
 static_art=packed(files)
 mods=[]
@@ -75,16 +93,16 @@ window.dolPrepareArtPack=async()=>{
 s=s.replace(old,prepare,1)
 assert re.search(r'<tw-storydata[^>]*>',s)[0]==re.search(r'<tw-storydata[^>]*>',(ROOT/'game.html').read_text())[0]
 core=patch_renderers(s).encode();core_parts=parts(core,'core',True)
-manifest={'build':'dol-mobile-8','source_game_sha256':sha((ROOT/'game.html').read_bytes()),'core_sha256':sha(core),'core_bytes':len(core),'core':core_parts,'mods':mods,'artwork':report,'static_images':len(images),'unique_images':len(unique),'static_image_bytes':sum(unique.values()),'max_resource_bytes':LIMIT}
-(OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
+manifest={'build':'dol-mobile-9','source_game_sha256':sha((ROOT/'game.html').read_bytes()),'core_sha256':sha(core),'core_bytes':len(core),'core':core_parts,'mods':mods,'artwork':report,'static_images':len(images),'unique_images':len(unique),'static_image_bytes':sum(unique.values()),'max_resource_bytes':LIMIT}
+(OUT/'manifest-9.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
 assert all(p['bytes']<=LIMIT for item in mods for p in item['parts'])
 assert all(p['bytes']<=LIMIT for p in core_parts)
 (OUT/'BUILD-CREDITS.md').write_text('Same 0.5.12.13 Chinese game and BESC+UCB artwork as game.html. Original credits and licenses are retained in the artwork provider. Artwork is served on demand without modifying image bytes.\n')
-page='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 手机加载入口</title><style>body{background:#111;color:#eee;font:18px/1.7 system-ui;max-width:38em;margin:auto;padding:24px}a{color:#9cf}progress{width:100%;height:24px}button{font:inherit;padding:12px;background:#333;color:white;border:1px solid #aaa}#error{color:#ffbba8;white-space:pre-wrap}</style></head><body><h1>DoL 汉化＋BESC/UCB</h1><p id="status" role="status">正在准备手机版资源……</p><progress id="progress" value="0" max="100"></progress><p id="detail"></p><p id="error" role="alert"></p><button id="retry" hidden>重试加载（保留存档）</button><p>资源分批加载，图片按显示需要读取。游戏和存档位置保持不变。</p><p><a href="backup.html">存档备份</a> · <a href="legacy.html">旧版导出存档</a> · <a href="online.html?build=dol-051213-chs101a-3">完整整合包入口</a></p><script src="save-backup.js?mobile=6"></script><script>HTTP_QUEUE_INLINE</script><script src="mobile-cache.js?mobile=8"></script><script src="mobile-loader.js?mobile=8"></script></body></html>'''
+page='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 手机加载入口</title><style>body{background:#111;color:#eee;font:18px/1.7 system-ui;max-width:38em;margin:auto;padding:24px}a{color:#9cf}progress{width:100%;height:24px}button{font:inherit;padding:12px;background:#333;color:white;border:1px solid #aaa}#error{color:#ffbba8;white-space:pre-wrap}</style></head><body><h1>DoL 汉化＋BESC/UCB</h1><p id="status" role="status">正在准备手机版资源……</p><progress id="progress" value="0" max="100"></progress><p id="detail"></p><p id="error" role="alert"></p><button id="retry" hidden>重试加载（保留存档）</button><p>资源分批加载，图片按显示需要读取。游戏和存档位置保持不变。</p><p><a href="backup.html">存档备份</a> · <a href="legacy.html">旧版导出存档</a> · <a href="online.html?build=dol-051213-chs101a-3">完整整合包入口</a></p><script src="save-backup.js?mobile=6"></script><script>HTTP_QUEUE_INLINE</script><script src="mobile-cache.js?mobile=9"></script><script src="mobile-loader.js?mobile=9"></script></body></html>'''
 page=page.replace('HTTP_QUEUE_INLINE',(ROOT/'http-queue.js').read_text())
 (ROOT/'mobile.html').write_text(page)
 # New visitors use the small shell; old binaries and offline downloads remain.
-entry='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 汉化美化版</title></head><body style="background:#111;color:#eee;font:18px/1.7 system-ui;padding:24px"><h1>DoL 汉化＋BESC/UCB</h1><p><a href="mobile.html?mobile=8" style="color:#9cf">打开手机版加载入口</a></p><p>正在进入。资源分批加载，图片按需读取，原存档位置不变。</p><p><a href="backup.html" style="color:#9cf">存档备份</a> · <a href="online.html?build=dol-051213-chs101a-3" style="color:#9cf">完整整合包入口</a></p><script>location.replace('mobile.html?mobile=8');</script></body></html>'''
+entry='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 汉化美化版</title></head><body style="background:#111;color:#eee;font:18px/1.7 system-ui;padding:24px"><h1>DoL 汉化＋BESC/UCB</h1><p><a href="mobile.html?mobile=9" style="color:#9cf">打开手机版加载入口</a></p><p>正在进入。资源分批加载，图片按需读取，原存档位置不变。</p><p><a href="backup.html" style="color:#9cf">存档备份</a> · <a href="online.html?build=dol-051213-chs101a-3" style="color:#9cf">完整整合包入口</a></p><script>location.replace('mobile.html?mobile=9');</script></body></html>'''
 for name in ['index.html','play.html','launch.html','start.html']:(ROOT/name).write_text(entry)
 summary={k:manifest[k] for k in ['build','source_game_sha256','core_bytes','static_images','unique_images','static_image_bytes','max_resource_bytes']}
 summary.update(core_download_bytes=sum(p['bytes'] for p in core_parts),mod_download_bytes=sum(m['bytes'] for m in mods),html_entry_bytes=len(page.encode()))

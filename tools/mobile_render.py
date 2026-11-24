@@ -24,7 +24,7 @@ def patch_renderers(source):
             if (frameCount > 0 && Math.abs(alignedWidth - scaledWidth) <= 4) scaledWidth = alignedWidth;
         }""".strip())
     renderer = replace(renderer, 'const rescaledImage = rescaleImageToCanvasHeight(layer.scale, image, layer.model.height);', """
-                    const frameWidth = layer.model.name === "main" && typeof src === "string" && /^(?:\\.\\/)?img\\/clothes\\//.test(src)
+                    const frameWidth = layer.model.name === "main" && typeof src === "string" && /^(?:dol-original:|\\.\\/)?img\\/clothes\\//.test(src)
                         ? (layer.width || layer.model.width)
                         : 0;
                     const rescaledImage = rescaleImageToCanvasHeight(layer.scale, image, layer.model.height, frameWidth);""".strip())
@@ -41,17 +41,31 @@ def patch_renderers(source):
     const currentComposition = new WeakMap();
     function composeLayers(targetCanvas, layerSpecs, frameCount, listener) {
         const composition = {};
+        const failedLayers = new Set();
         currentComposition.set(targetCanvas, composition);'''.rstrip())
     renderer = replace(renderer, '\t\t\tif (rendered) return;',
                        '\t\t\tif (rendered || currentComposition.get(targetCanvas) !== composition) return;')
-    renderer = replace(renderer, '\t\t\t\t\t// Mark this src as erroneous to avoid blinking due to reload attempts', """
+    renderer = replace(renderer, 'if (layer.show === false) continue; // Could be disabled due to load error',
+                       'if (layer.show === false || failedLayers.has(layer)) continue;')
+    renderer = replace(renderer, 'if (Renderer.imageIsLoading === true) return;',
+                       'if (failedLayers.has(layer) || layer.show === false) continue;\n\t\t\t\tif (Renderer.imageIsLoading === true) return;')
+    # A failed asset must settle its own layer, without blocking the new canvas.
+    for marker in ('// Mark this src as erroneous to avoid blinking due to reload attempts', 'console.error("Failed to load mask "'):
+        renderer = replace(renderer, '\t'*5 + marker, """
                     if (error?.dolArtwork) {
-                        // Preserve the previous canvas and retry on the next composition.
-                        rendered = true;
+                        failedLayers.add(layer);
+                        maybeRenderResult();
                         return;
                     }
-                    // Mark this src as erroneous to avoid blinking due to reload attempts""".rstrip())
+                    """ + marker)
     source = source[:start] + renderer + source[end:]
+
+    source = replace(source, 'return [...this.layerList, ...layers];', """
+        const compiled = [...this.layerList, ...layers];
+        if (this.name === "main" && window.DOLMobileArt) {
+            return window.DOLMobileArt.matchClothing(compiled);
+        }
+        return compiled;""".strip())
 
     # Weather uses a separate detached-image cache.
     start = source.index('const ImageCache = (() => {')

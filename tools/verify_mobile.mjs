@@ -57,7 +57,7 @@ try{
  await page.evaluate(()=>{localStorage.setItem('mobile-preserve-local','keep');sessionStorage.setItem('mobile-preserve-session','keep');});
  phase='mobile';errors.length=0;
  const coldStart=Date.now();
- await page.goto(base+'mobile.html?mobile=8',{waitUntil:'domcontentloaded',timeout:30000});await ready();
+ await page.goto(base+'mobile.html?mobile=9',{waitUntil:'domcontentloaded',timeout:30000});await ready();
  const coldMs=Date.now()-coldStart;
  assert.equal(await page.evaluate(()=>window.modSC2DataManager.getLanguageManager().mainLanguage),'zh');
  assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.delivery),'static-on-demand');
@@ -81,7 +81,7 @@ try{
  await script("window.__saveState={money:V.money,marker:V.mobilePreserveMarker};");
  assert.deepEqual(await page.evaluate(()=>window.__saveState),{money:123456,marker:'keep-mobile-save'});
  assert.match(await page.locator('#passages').innerText(),/[\u4e00-\u9fff]{3}/);
- const manifest=JSON.parse(await fs.readFile('mobile/manifest.json','utf8'));
+ const manifest=JSON.parse(await fs.readFile('mobile/manifest-9.json','utf8'));
  const samples=await page.evaluate(async items=>{
   const result={};
   for(const [name,item] of Object.entries(items)){
@@ -93,6 +93,60 @@ try{
   }return result;
  },manifest.artwork.samples);
  for(const [name,item] of Object.entries(manifest.artwork.samples)){assert.equal(samples[name].hash,item.sha256);assert.ok(samples[name].width>0&&samples[name].height>0);}
+ const shopPreview=await page.evaluate(async()=>{
+  const host=document.createElement('div');
+  document.body.append(host);
+  const original=Renderer.composeLayers;
+  let timer;
+  try {
+   return await new Promise((resolve,reject)=>{
+    timer=setTimeout(()=>reject(Error('Milkmaid shop mannequin did not finish: '+host.textContent)),35000);
+    Renderer.composeLayers=(ctx,layers,frames,listener)=>{
+     const paths=layers.filter(layer=>layer.show!==false).map(layer=>layer.src);
+     if(!paths.some(src=>String(src).includes('milkmaid dress')))return original(ctx,layers,frames,listener);
+     return original(ctx,layers,frames,{...listener,renderingDone(time){
+      listener?.renderingDone?.(time);
+      const pixels=ctx.getImageData(0,0,ctx.canvas.width,ctx.canvas.height).data;
+      resolve({paths,visible:pixels.some((value,i)=>i%4===3&&value>0)});
+     }});
+    };
+    new SugarCube.Wikifier(host,'<<mannequin "upper" 218 "black" "white">>');
+   });
+  } finally { clearTimeout(timer); Renderer.composeLayers=original; host.remove(); }
+ });
+ assert.equal(shopPreview.visible,true);
+ assert.ok(shopPreview.paths.includes('dol-original:img/body/mannequin/base-body.png'),'the real shop mannequin uses the original body');
+ for(const slot of ['upper','lower']){
+  assert.ok(shopPreview.paths.some(path=>typeof path==='string'&&path.startsWith('img/clothes/'+slot+'/milkmaid dress/')),'preview draws the matching dress '+slot);
+ }
+ const fallbackComposition=await page.evaluate(async()=>{
+  const target=document.createElement('canvas').getContext('2d');
+  const source=document.createElement('canvas');
+  source.getContext('2d').fillRect(0,0,12,12);
+  const loader=Renderer.ImageLoader;
+  const failure='img/clothes/test-unavailable/full.png';
+  let timer;
+  try {
+   Renderer.ImageLoader={loadImage(src,layer,ok,fail){
+    if(src===failure){ queueMicrotask(()=>fail(src,layer,{dolArtwork:true}));return; }
+    loader.loadImage(src,layer,ok,fail);
+   }};
+   return await new Promise((resolve,reject)=>{
+    timer=setTimeout(()=>reject(Error('A failed garment blocked the remaining layers')),5000);
+    const model={name:'main',height:target.canvas.height,width:target.canvas.width};
+    Renderer.composeLayers(target,[{src:source,z:0,model},{src:failure,z:1,model}],1,{
+     renderingDone(){resolve(target.getImageData(4,4,1,1).data[3]);},
+     error:reject
+    });
+   });
+  } finally { clearTimeout(timer); Renderer.ImageLoader=loader; }
+ });
+ assert.equal(fallbackComposition,255,'a failed garment does not hide the remaining canvas');
+ const town=await page.evaluate(async()=>{
+  const image=await ImageCache.getOrCreate('img/misc/locations/town/base.png');
+  return {embedded:image.src.startsWith('data:image/png;base64,'),width:image.width,height:image.height};
+ });
+ assert.ok(town.embedded&&town.width>0&&town.height>0,'town background is available without an image request');
  const dressLayers=['img/clothes/upper/tie front dress/full.png','img/clothes/lower/tie front dress/full.png'];
  const otherClothes={
   'img/clothes/face/gasmask/full.png':512,
@@ -192,7 +246,7 @@ try{
  await page.close();
  const warmPage=await context.newPage();
  const warmStart=Date.now();
- await warmPage.goto(base+'mobile.html?mobile=8',{waitUntil:'domcontentloaded'});
+ await warmPage.goto(base+'mobile.html?mobile=9',{waitUntil:'domcontentloaded'});
  await warmPage.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:90000});
  const warmMs=Date.now()-warmStart;
  assert.equal(warmRequests,0);
