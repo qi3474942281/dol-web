@@ -18,7 +18,16 @@
   vars.dolWardrobeCapacity=Math.max(current.minimum,Math.min(Number.MAX_SAFE_INTEGER,current.capacity+delta));
   apply(vars);
  };
- window.DOLWardrobeCapacity={info,apply,change};
+ // This SugarCube fork saves the entry snapshot, not live overlay variables.
+ // Copy only this explicit cheat setting into the current saved frame.
+ const writeToSave=(vars,save)=>{
+  if(!Number.isSafeInteger(vars.dolWardrobeCapacity)||vars.dolWardrobeCapacity<1)return;
+  const saved=save?.state?.history?.[save.state.index]?.variables;
+  if(!saved?.wardrobe)return;
+  saved.dolWardrobeCapacity=vars.dolWardrobeCapacity;
+  apply(saved);
+ };
+ window.DOLWardrobeCapacity={info,apply,change,writeToSave};
  try {
  const manager=window.modSC2DataManager,previous=manager.getSC2DataInfoAfterPatch(),patched=previous.cloneSC2DataInfo();
  const cheats=patched.passageDataItems.items.find(p=>p.name==='Cheats');
@@ -46,6 +55,10 @@
  const script=scripts[0],begin=script.content.indexOf(start),end=script.content.indexOf('\n\t}',begin);
  if(end<0||!script.content.slice(begin,end).includes('wardrobe.space = 20;'))throw Error('Wardrobe furniture updater changed');
  script.content=script.content.slice(0,end)+'\n\t\twindow.DOLWardrobeCapacity.apply(V);'+script.content.slice(end);
+ const saveStart='function onSave(save, details) {';
+ const saveScripts=patched.scriptFileItems.items.filter(item=>item.content.includes(saveStart));
+ if(saveScripts.length!==1)throw Error('Wardrobe save hook target missing');
+ saveScripts[0].content=saveScripts[0].content.replace(saveStart,saveStart+'\n\twindow.DOLWardrobeCapacity.writeToSave(V,save);');
  patched.passageDataItems.fillMap();patched.scriptFileItems.fillMap();
  manager.getModUtils().replaceFollowSC2DataInfo(patched,previous);
  window.DOLWardrobeCapacity.patchReport={menu:true,furniture:true};
