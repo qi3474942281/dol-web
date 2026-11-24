@@ -61,7 +61,7 @@
    if(!document.body)return;
    if(!box){box=document.createElement('div');box.id='dol-rate-limit-notice';box.setAttribute('role','status');box.style='position:fixed;z-index:2147483647;left:8px;right:8px;bottom:8px;padding:12px;background:#4b231c;color:white;border:1px solid #e9b0a0;font:15px/1.5 system-ui';document.body.append(box);}
    box.textContent=halted?'网站连续限流，已停止发送请求。请先存档，等待限制解除后再重新打开游戏。':'网站暂时限流，等待 '+seconds+' 秒后自动继续。请不要连续刷新，存档不受影响。';
-  };render();timer=setInterval(render,1000);
+  };render();if(!halted)timer=setInterval(render,1000);
  }
  let storage;try{storage=root.sessionStorage;}catch{}
  root.DOLHttpQueue=createHttpQueue({storage,onCooldown:banner});

@@ -932,13 +932,13 @@
     },
     {
       "name": "DoLWebArtPack",
-      "bytes": 1571451,
-      "sha256": "0b204058715c94e923ca4508630bbe6469f550c2ac2292b194e9604d605675f6",
+      "bytes": 1571508,
+      "sha256": "5276fec9e29d5dc75986c4dd4cb62e892620fd88ead53197853179b3c9c8c2cf",
       "parts": [
         {
-          "path": "mobile/mods/fb75808931c219d1f7e2988c870a53fdbcdeb7a41affbbfbf2dcea3bfb5ebe83.bin",
+          "path": "mobile/mods/d52ff646f30edf5e4f8f129d21e4224c9a4e3008faecbb478f8b49e75a0f4a92.bin",
           "bytes": 524288,
-          "sha256": "fb75808931c219d1f7e2988c870a53fdbcdeb7a41affbbfbf2dcea3bfb5ebe83",
+          "sha256": "d52ff646f30edf5e4f8f129d21e4224c9a4e3008faecbb478f8b49e75a0f4a92",
           "raw_bytes": 524288,
           "gzip": false
         },
@@ -950,10 +950,10 @@
           "gzip": false
         },
         {
-          "path": "mobile/mods/6d25bad743e5ce0923c1be0b216a86bd60eeddea27e6422386a1e5c72db2b9fa.bin",
-          "bytes": 522875,
-          "sha256": "6d25bad743e5ce0923c1be0b216a86bd60eeddea27e6422386a1e5c72db2b9fa",
-          "raw_bytes": 522875,
+          "path": "mobile/mods/6bddf92d8166776b41f41d33a4f7ff8a8dd4532fa2807504779df010294c93ae.bin",
+          "bytes": 522932,
+          "sha256": "6bddf92d8166776b41f41d33a4f7ff8a8dd4532fa2807504779df010294c93ae",
+          "raw_bytes": 522932,
           "gzip": false
         }
       ]
