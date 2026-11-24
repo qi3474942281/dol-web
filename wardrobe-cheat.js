@@ -1,5 +1,5 @@
-/* Preserve a user-selected bedroom wardrobe capacity through furniture updates. */
 (async () => {
+ /* Preserve a user-selected bedroom wardrobe capacity through furniture updates. */
  const slots=['over_upper','over_lower','upper','lower','under_upper','under_lower','over_head','head','face','neck','hands','handheld','legs','feet','genitals'];
  const info=vars=>{
   const wardrobe=vars.wardrobe;
