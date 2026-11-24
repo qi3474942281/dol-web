@@ -554,21 +554,21 @@
     },
     {
       "name": "DoLWebArtPack",
-      "bytes": 1571912,
-      "sha256": "691491f2eded88f51b1ddeecf16b4de216646858a5c2f73d0e0350ae8430a6d3",
+      "bytes": 1571909,
+      "sha256": "5e58c07fd694d5f11fbd1d0d88d49082101e76c01b07eadc74d2cc40720fd02e",
       "parts": [
         {
-          "path": "mobile/mods/bb70aad4ded6a1196ddb0fc8aba15de254697512ba0672b7c3a9b5c8b9056bb2.bin",
+          "path": "mobile/mods/7139bc5413021531a51bd5f03f243df1c2e6377de45b8c5d9c339d4114807dc5.bin",
           "bytes": 1048576,
-          "sha256": "bb70aad4ded6a1196ddb0fc8aba15de254697512ba0672b7c3a9b5c8b9056bb2",
+          "sha256": "7139bc5413021531a51bd5f03f243df1c2e6377de45b8c5d9c339d4114807dc5",
           "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/76a6fef9333ab28d25fd0dc3f82ddcbd82fd4e356105add9497bed962c41580f.bin",
-          "bytes": 523336,
-          "sha256": "76a6fef9333ab28d25fd0dc3f82ddcbd82fd4e356105add9497bed962c41580f",
-          "raw_bytes": 523336,
+          "path": "mobile/mods/26d28d24c85852d1f0cd1ecd960b7cc0c22e17f20b0e148101d1b950ce709cea.bin",
+          "bytes": 523333,
+          "sha256": "26d28d24c85852d1f0cd1ecd960b7cc0c22e17f20b0e148101d1b950ce709cea",
+          "raw_bytes": 523333,
           "gzip": false
         }
       ]
