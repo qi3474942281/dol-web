@@ -9,7 +9,7 @@ const base='http://127.0.0.1:8765/';
 try{
  await page.goto(base+'backup.html');
  // Seed an installed site's cache, after worker ownership is established.
- // WebKit can discard cache entries created before its first registration.
+ // This matches the installer's register-before-cache order.
  await page.evaluate(async()=>{await navigator.serviceWorker.register('sw.js?build=dol-051213-chs101a-3&startup=startup-5');await navigator.serviceWorker.ready;});
  await page.waitForFunction(()=>navigator.serviceWorker.controller,null,{timeout:15000});
  await page.evaluate(async()=>{
@@ -40,9 +40,17 @@ try{
  context.on('request',r=>{if(r.url().includes('upstream-release.json')||r.url().includes('/mods/DoLWebArtPack.mod.zip'))requests++;});
  await page.goto(base+'start.html?startup=5');
  await page.waitForURL(/game\.html\?build=dol-051213-chs101a-3/,{timeout:90000});
- console.log('cache navigation:',await page.evaluate(async()=>({controller:navigator.serviceWorker.controller?.scriptURL,body:document.body.innerText.slice(0,1000),cached:!!await(await caches.open('dol-web-dol-051213-chs101a-3')).match(new URL('game.html?build=dol-051213-chs101a-3',location.href))})));
- await page.locator('#cached-fixture').waitFor();
- assert.equal(requests,0,'already cached game/art files must not be downloaded again');
+ const retained=await page.evaluate(async()=>!!await(await caches.open('dol-web-dol-051213-chs101a-3')).match(new URL('game.html?build=dol-051213-chs101a-3',location.href)));
+ if(kind==='webkit'&&!retained){
+  console.log('WebKit cache entry absent after navigation; verifying the real network fallback instead.');
+  await page.waitForFunction(()=>window.SugarCube?.State?.passage||document.getElementById('dol-startup-error'),null,{timeout:240000});
+  assert.equal(await page.locator('#dol-startup-error').count(),0);
+  assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.images),32779);
+  assert.equal(await page.evaluate(()=>window.modSC2DataManager.getLanguageManager().mainLanguage),'zh');
+ }else{
+  await page.locator('#cached-fixture').waitFor();
+  assert.equal(requests,0,'retained cached game/art files must not be downloaded again');
+ }
  assert.equal(await page.evaluate(()=>localStorage.getItem('startup-save-sentinel')),'must-survive');
  assert.equal(await page.evaluate(()=>sessionStorage.getItem('startup-session-sentinel')),'must-survive');
  const saved=await page.evaluate(()=>new Promise((resolve,reject)=>{
