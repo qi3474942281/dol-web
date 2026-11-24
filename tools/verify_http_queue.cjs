@@ -1,11 +1,11 @@
 const {createHttpQueue}=require('../http-queue.js');
 const assert=require('node:assert/strict');
 (async()=>{
- let clock=100000,calls=[],count=0;const store=new Map();
- const q=createHttpQueue({now:()=>clock,sleep:async ms=>{clock+=ms;},gapMs:0,storage:{getItem:k=>store.get(k),setItem:(k,v)=>store.set(k,v)},fetcher:async()=>{
-  calls.push(clock);return ++count===1?new Response('limited',{status:429,headers:{'Retry-After':'2'}}):new Response(new Uint8Array([7,8]));
+ let clock=100000,calls=[],modes=[],count=0;const store=new Map();
+ const q=createHttpQueue({now:()=>clock,sleep:async ms=>{clock+=ms;},gapMs:0,storage:{getItem:k=>store.get(k),setItem:(k,v)=>store.set(k,v)},fetcher:async(url,options)=>{
+  calls.push(clock);modes.push(options.cache);return ++count===1?new Response('limited',{status:429,headers:{'Retry-After':'2'}}):new Response(new Uint8Array([7,8]));
  }});
- assert.deepEqual(Array.from(await q.read('a')),[7,8]);assert.ok(calls[1]-calls[0]>=2000);assert.equal(Number(store.get('dol-http-cooldown-v1')),102000);
+ assert.deepEqual(Array.from(await q.read('a')),[7,8]);assert.ok(calls[1]-calls[0]>=2000);assert.equal(Number(store.get('dol-http-cooldown-v1')),102000);assert.deepEqual(modes,['force-cache','reload']);
  // A new page must respect a cooldown recorded by a previous page.
  clock=101000;let first;
  const resumed=createHttpQueue({now:()=>clock,sleep:async ms=>{clock+=ms;},gapMs:0,storage:{getItem:k=>store.get(k)},fetcher:async()=>{first=clock;return new Response('ok');}});

@@ -22,7 +22,7 @@
   async function run(job){
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),job.options.timeoutMs??45000);
    try{
-    const r=await fetcher(job.url,{cache:job.options.cache||'force-cache',signal:controller.signal});
+    const r=await fetcher(job.url,{cache:job.rateRetries?'reload':job.options.cache||'force-cache',signal:controller.signal});
     if(r.status===429){
      rateLimit(r);try{await r.body?.cancel();}catch{}
      if(halted||job.rateRetries>=2){job.reject(rateError());if(halted)for(const item of waiting.splice(0))item.reject(rateError());}
