@@ -3,7 +3,7 @@ from pathlib import Path
 root=Path(sys.argv[1])
 with zipfile.ZipFile('DoL-0.5.12.13-BESC-UCB-Offline-v9.zip') as z:
     html=z.read('开始游戏.html').decode()
-mods=json.loads(re.search(r'window\.modDataValueZipList\s*=\s*(\[.*?\]);',html,re.S)[1])
+    mods=[base64.b64encode(z.read(f'mods/{i:02}.zip')).decode() for i in range(26)]
 baseline=(root/'game.html').read_text()
 assert re.search(r'<tw-storydata[^>]*>',html)[0]==re.search(r'<tw-storydata[^>]*>',baseline)[0]
 assert len(mods)==26
@@ -22,7 +22,7 @@ with zipfile.ZipFile(root/'mods/GameOriginalImagePack.mod.zip') as z:
     assert base64.b64decode(files['img/dol-original/body/mannequin/base-body.png'])==z.read('img/body/mannequin/base-body.png')
 with zipfile.ZipFile(io.BytesIO(base64.b64decode(mods[-2]))) as z:
     assert 'wardrobe-cheat.js' in z.namelist()
-for needle in ('window.DOLMobileArt.matchClothing(compiled)','failedLayers.add(layer)','window.DOLWebArtInline=true'):
+for needle in ('window.DOLMobileArt.matchClothing(compiled)','failedLayers.add(layer)',"const path='mods/'"):
     assert needle in html
 script='''
 const assert=require('node:assert/strict'), vm=require('node:vm');

@@ -98,11 +98,43 @@ assert sha(source) == manifest['source_game_sha256']
 source = patch_renderers(source.decode())
 story = re.search(r'<tw-storydata[^>]*>',source)[0]
 mods = re.search(r'window\.modDataValueZipList\s*=\s*(\[.*?\]);',source,re.S)
-bundled = json.dumps([base64.b64encode(archive).decode() for archive in archives],separators=(',',':'))
-source = source[:mods.start(1)] + bundled + source[mods.end(1):]
-source = source.replace('<head>','<head><script>window.DOLWebArtInline=true;</script>',1)
+source = source[:mods.start(1)] + '[]' + source[mods.end(1):]
+original_prepare = '<script>'+(root/'art-preload.js').read_text()+'</script>'
+assert source.count(original_prepare)==1
+prepare = """<script>
+window.dolPrepareArtPack=async()=>{
+ const status=document.createElement('p');
+ status.textContent='正在读取本机模组……';
+ status.style='position:fixed;inset:0;z-index:2147483646;background:#111;color:white;padding:24px;font:18px system-ui';
+ document.body.append(status);
+ try {
+  for(let i=0;i<26;i++){
+   status.textContent='正在读取本机模组 '+(i+1)+' / 26……';
+   const path='mods/'+String(i).padStart(2,'0')+'.zip';
+   const response=await fetch(path);
+   if(!response.ok)throw Error('模组读取失败：'+path+' HTTP '+response.status);
+   const blob=await response.blob();
+   const data=await new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result.split(',')[1]);
+    reader.onerror=()=>reject(reader.error);
+    reader.readAsDataURL(blob);
+   });
+   window.modDataValueZipList.push(data);
+  }
+  status.textContent='正在初始化游戏……';
+  const timer=setInterval(()=>{
+   if(window.DOLBootCheck||document.getElementById('dol-startup-error')){
+    clearInterval(timer);
+    status.remove();
+   }
+  },300);
+ }catch(error){status.remove();throw error;}
+};
+</script>"""
+source = source.replace(original_prepare,prepare,1)
 assert story == re.search(r'<tw-storydata[^>]*>',source)[0]
-assert 'window.DOLWebArtInline=true' in source
+assert "const path='mods/'" in source
 guide = '''DoL 0.5.12.13-chs-1.0.1a · 离线修复版 v9
 
 本包带有 BESC/UCB 美化、v9 服装与人物身形匹配、城镇底图和衣柜容量修复。
@@ -110,7 +142,7 @@ guide = '''DoL 0.5.12.13-chs-1.0.1a · 离线修复版 v9
 
 iPhone：先解压，TinyServer 选择解压后包含「开始游戏.html」的文件夹。
 启动服务，点 Open Browser。如果看到文件列表，点「开始游戏.html」。
-Windows 或 Mac：解压后，用浏览器打开「开始游戏.html」。
+Windows 或 Mac：解压后从本机 HTTP 服务打开同名文件。请保留 mods 文件夹。
 
 迁移网页或旧本地版进度：先在旧版「存档 → 导出/载入 → 导出存档」，
 再在此版选择「从文件载入」。同一地址、同一浏览器通常可直接读取原来的本地存档。
@@ -121,11 +153,13 @@ with zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as re
     result.writestr('index.html',index)
     result.writestr('开始游戏.html',source)
     result.writestr('使用说明.txt',guide)
+    for i,archive in enumerate(archives):
+        result.writestr(f'mods/{i:02}.zip',archive,compress_type=zipfile.ZIP_STORED)
     for name in ('LICENSE','CREDITS.md'):
         result.write(root/name,name)
 with zipfile.ZipFile(destination) as result:
     assert result.testzip() is None
-    assert len(result.namelist()) == 5
+    assert len(result.namelist()) == 31
 with zipfile.ZipFile(io.BytesIO(archives[-1])) as result:
     assert result.testzip() is None
     for path, alias in variants.items():

@@ -6,13 +6,17 @@ try {
  const context = await browser.newContext(devices['iPhone 13']);
  const url = 'http://127.0.0.1:8765';
  await context.route('**/*', route => {
-  if (new URL(route.request().url()).origin === url) return route.continue();
+  const request=new URL(route.request().url());
+  if (request.origin === url || request.protocol === 'data:' || request.protocol === 'blob:') return route.continue();
   return route.abort();
  });
  await context.addInitScript(() => localStorage.setItem('verifiedAge','true'));
  const page = await context.newPage();
- await page.goto(url, {waitUntil:'domcontentloaded',timeout:120000});
+ page.on('pageerror',error=>console.log('Page error:',error.message.slice(0,500)));
+ page.on('console',message=>{if(message.type()==='error')console.log('Browser error:',message.text().slice(0,500));});
+ await page.goto(url+'/开始游戏.html', {waitUntil:'domcontentloaded',timeout:120000});
  await page.waitForFunction(() => window.SugarCube?.State?.passage || document.getElementById('dol-startup-error'),null,{timeout:180000});
+ console.log('Game startup reached');
  const result = await page.evaluate(async () => {
   const body = 'img/body/mannequin/base-body.png';
   const upper = 'img/clothes/upper/milkmaid dress/full.png';
