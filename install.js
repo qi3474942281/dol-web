@@ -1,25 +1,26 @@
 (() => {
  const BUILD='dol-051213-chs101a-3',CACHE='dol-web-'+BUILD;
+ const STARTUP='startup-4';
  const absolute=p=>new URL(p+'?build='+BUILD,location.href).href;
  const game=absolute('game.html'),art=absolute('mods/DoLWebArtPack.mod.zip');
  const $=id=>document.getElementById(id);
  const status=$('status'),detail=$('detail'),progress=$('progress'),retry=$('retry'),play=$('play');
  let running=false;
  function timeout(promise,ms,message){let timer;return Promise.race([promise,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error(message)),ms))]).finally(()=>clearTimeout(timer));}
- async function workerBuild(){
+ async function workerVersion(){
   if(!navigator.serviceWorker.controller)return null;
-  return new Promise(resolve=>{const channel=new MessageChannel();const timer=setTimeout(()=>resolve(null),700);channel.port1.onmessage=e=>{clearTimeout(timer);channel.port1.close();resolve(e.data);};navigator.serviceWorker.controller.postMessage('GET_BUILD',[channel.port2]);});
+  return new Promise(resolve=>{const channel=new MessageChannel();const done=value=>{clearTimeout(timer);channel.port1.close();resolve(value);};const timer=setTimeout(()=>done(null),700);channel.port1.onmessage=e=>done(e.data);navigator.serviceWorker.controller.postMessage('GET_VERSION',[channel.port2]);});
  }
  async function control(){
   if(!('serviceWorker' in navigator))throw Error('当前浏览器不支持离线网页缓存，请用 Safari/Chrome 打开原网址。');
-  if(await workerBuild()===BUILD)return;
-  await timeout(navigator.serviceWorker.register('sw.js?build='+BUILD,{updateViaCache:'none'}),20000,'离线缓存组件加载超时，请重试。');
+  if(await workerVersion()===STARTUP)return;
+  await timeout(navigator.serviceWorker.register('sw.js?build='+BUILD+'&startup='+STARTUP,{updateViaCache:'none'}),20000,'离线缓存组件加载超时，请重试。');
   const deadline=Date.now()+30000;
-  while(Date.now()<deadline){if(await workerBuild()===BUILD)return;await new Promise(r=>setTimeout(r,250));}
+  while(Date.now()<deadline){if(await workerVersion()===STARTUP)return;await new Promise(r=>setTimeout(r,250));}
   throw Error('缓存组件尚未更新，请重新打开本页后重试。');
  }
  async function download(cache,item,completed,total){
-  const target=absolute(item.path);if(await cache.match(target))return;
+   const target=absolute(item.path);if(await timeout(cache.match(target),15000,'读取本机缓存超时，请重试。'))return;
   const controller=new AbortController();let idle;
   const touch=()=>{clearTimeout(idle);idle=setTimeout(()=>controller.abort(),30000);};touch();
   try{
@@ -46,8 +47,14 @@
   try{
    status.textContent='正在保留升级前存档和设置……';
    await timeout(DOLBackup.ensure(),30000,'存档备份超时。请先关闭其他游戏标签页，再重试；也可打开旧版导出存档。');
-   await control();const cache=await caches.open(CACHE);
-   if(await cache.match(game)&&await cache.match(art)){progress.value=100;status.textContent='汉化和美化均已缓存，正在进入……';location.replace(game);return;}
+   status.textContent='正在检查离线缓存组件……';
+   await control();
+   status.textContent='正在打开本机文件缓存……';
+   const cache=await timeout(caches.open(CACHE),15000,'打开本机文件缓存超时，请重试。');
+   status.textContent='正在检查游戏和美化文件……';
+   const cached=await timeout(Promise.all([cache.match(game),cache.match(art)]),15000,'读取本机文件缓存超时，请重试。');
+   if(cached.every(Boolean)){progress.value=100;status.textContent='汉化和美化均已缓存，正在进入……';location.replace(game);return;}
+   status.textContent='正在读取已部署的版本信息……';
    const manifest=await timeout(fetch('upstream-release.json?build='+BUILD,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('版本清单下载失败');return r.json();}),20000,'版本清单下载超时，请重试。');
    if(manifest.build!==BUILD)throw Error('网站正在更新文件，请稍后重试。');
    const files=manifest.install_files;
