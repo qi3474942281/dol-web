@@ -1,7 +1,7 @@
 name: Build and verify mobile resource delivery
 on:
   push:
-    branches: ['fix/mobile-assets', 'fix/wardrobe-capacity']
+    branches: ['fix/mobile-assets', 'fix/wardrobe-capacity', 'fix/request-pacing']
     paths-ignore: ['mobile/**', 'mobile.html', 'index.html', 'play.html', 'launch.html', 'start.html']
   workflow_dispatch:
 concurrency:
@@ -20,6 +20,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - run: node tools/verify_http_queue.cjs
       - run: python tools/build_mobile.py
       - id: commit
         name: Commit generated mobile resources

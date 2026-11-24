@@ -48,6 +48,7 @@ for path in images:
   p=OUT/'art'/name;p.parent.mkdir(exist_ok=True);p.write_bytes(b);unique[name]=len(b)
 files={n:art.read(n) for n in art.namelist() if not n.startswith('img/') and not n.endswith('/') and not n.endswith('.map')}
 boot['imgFileList']=[]
+boot['version']='0.5.12.13.2'
 files['boot.json']=json.dumps(boot,ensure_ascii=False,separators=(',',':')).encode()
 report=json.loads((ROOT/'art-manifest.json').read_text());report['delivery']='static-on-demand'
 preload='''(async()=>{
@@ -60,16 +61,12 @@ preload='''(async()=>{
   const task=(async()=>{
    let last;
    for(let attempt=0;attempt<3;attempt++){
-    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
     try{
-     const r=await fetch(new URL(file,root).href,{signal:controller.signal,cache:attempt?'reload':'force-cache'});
-     if(!r.ok)throw Error('Image HTTP '+r.status);
-     const bytes=new Uint8Array(await r.arrayBuffer()),pieces=[];
+     const bytes=await window.DOLHttpQueue.read(new URL(file,root).href,{timeoutMs:20000,cache:attempt?'reload':'force-cache'}),pieces=[];
      for(let i=0;i<bytes.length;i+=32768)pieces.push(String.fromCharCode(...bytes.subarray(i,i+32768)));
      const ext=file.slice(file.lastIndexOf('.'));const mime={'.png':'image/png','.gif':'image/gif','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml'}[ext]||'application/octet-stream';
      return 'data:'+mime+';base64,'+btoa(pieces.join(''));
-    }catch(error){last=error;await new Promise(resolve=>setTimeout(resolve,300*(attempt+1)));}
-    finally{clearTimeout(timer);}
+    }catch(error){if(error.rateLimited)return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';last=error;await new Promise(resolve=>setTimeout(resolve,300*(attempt+1)));}
    }throw last;
   })().catch(error=>{imageCache.delete(file);throw error;});
   imageCache.set(file,task);while(imageCache.size>256)imageCache.delete(imageCache.keys().next().value);
@@ -105,10 +102,11 @@ manifest={'build':'dol-mobile-6','source_game_sha256':sha((ROOT/'game.html').rea
 assert all(p['bytes']<=LIMIT for item in mods for p in item['parts'])
 assert all(p['bytes']<=LIMIT for p in core_parts)
 (OUT/'BUILD-CREDITS.md').write_text('Same 0.5.12.13 Chinese game and BESC+UCB artwork as game.html. Original credits and licenses are retained in the artwork provider. Artwork is served on demand without modifying image bytes.\n')
-page='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 手机加载入口</title><style>body{background:#111;color:#eee;font:18px/1.7 system-ui;max-width:38em;margin:auto;padding:24px}a{color:#9cf}progress{width:100%;height:24px}button{font:inherit;padding:12px;background:#333;color:white;border:1px solid #aaa}#error{color:#ffbba8;white-space:pre-wrap}</style></head><body><h1>DoL 汉化＋BESC/UCB</h1><p id="status" role="status">正在准备手机版资源……</p><progress id="progress" value="0" max="100"></progress><p id="detail"></p><p id="error" role="alert"></p><button id="retry" hidden>重试加载（保留存档）</button><p>资源分批加载，图片按显示需要读取。游戏和存档位置保持不变。</p><p><a href="backup.html">存档备份</a> · <a href="legacy.html">旧版导出存档</a> · <a href="online.html?build=dol-051213-chs101a-3">完整整合包入口</a></p><script src="save-backup.js?mobile=6"></script><script src="mobile-loader.js?mobile=6"></script></body></html>'''
+page='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 手机加载入口</title><style>body{background:#111;color:#eee;font:18px/1.7 system-ui;max-width:38em;margin:auto;padding:24px}a{color:#9cf}progress{width:100%;height:24px}button{font:inherit;padding:12px;background:#333;color:white;border:1px solid #aaa}#error{color:#ffbba8;white-space:pre-wrap}</style></head><body><h1>DoL 汉化＋BESC/UCB</h1><p id="status" role="status">正在准备手机版资源……</p><progress id="progress" value="0" max="100"></progress><p id="detail"></p><p id="error" role="alert"></p><button id="retry" hidden>重试加载（保留存档）</button><p>资源分批加载，图片按显示需要读取。游戏和存档位置保持不变。</p><p><a href="backup.html">存档备份</a> · <a href="legacy.html">旧版导出存档</a> · <a href="online.html?build=dol-051213-chs101a-3">完整整合包入口</a></p><script src="save-backup.js?mobile=6"></script><script>HTTP_QUEUE_INLINE</script><script src="mobile-loader.js?mobile=7"></script></body></html>'''
+page=page.replace('HTTP_QUEUE_INLINE',(ROOT/'http-queue.js').read_text())
 (ROOT/'mobile.html').write_text(page)
 # New visitors use the small shell; old binaries and offline downloads remain.
-entry='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 汉化美化版</title></head><body style="background:#111;color:#eee;font:18px/1.7 system-ui;padding:24px"><h1>DoL 汉化＋BESC/UCB</h1><p><a href="mobile.html?mobile=6" style="color:#9cf">打开手机版加载入口</a></p><p>正在进入。资源分批加载，图片按需读取，原存档位置不变。</p><p><a href="backup.html" style="color:#9cf">存档备份</a> · <a href="online.html?build=dol-051213-chs101a-3" style="color:#9cf">完整整合包入口</a></p><script>location.replace('mobile.html?mobile=6');</script></body></html>'''
+entry='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 汉化美化版</title></head><body style="background:#111;color:#eee;font:18px/1.7 system-ui;padding:24px"><h1>DoL 汉化＋BESC/UCB</h1><p><a href="mobile.html?mobile=7" style="color:#9cf">打开手机版加载入口</a></p><p>正在进入。资源分批加载，图片按需读取，原存档位置不变。</p><p><a href="backup.html" style="color:#9cf">存档备份</a> · <a href="online.html?build=dol-051213-chs101a-3" style="color:#9cf">完整整合包入口</a></p><script>location.replace('mobile.html?mobile=7');</script></body></html>'''
 for name in ['index.html','play.html','launch.html','start.html']:(ROOT/name).write_text(entry)
 summary={k:manifest[k] for k in ['build','source_game_sha256','core_bytes','static_images','unique_images','static_image_bytes','max_resource_bytes']}
 summary.update(core_download_bytes=sum(p['bytes'] for p in core_parts),mod_download_bytes=sum(m['bytes'] for m in mods),html_entry_bytes=len(page.encode()))
