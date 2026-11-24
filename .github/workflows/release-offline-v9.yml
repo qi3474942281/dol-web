@@ -1,16 +1,29 @@
-name: Inspect clothing coverage report
+name: Recheck published clothing compatibility with item defaults
 on:
   push:
     branches: ['release/offline-clothing-audit']
 permissions:
   contents: read
 jobs:
-  report:
+  check:
     runs-on: ubuntu-24.04
-    env:
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
+    container: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - run: |
-          gh release download dol-web-offline-clothing-audit --pattern clothing-audit.json
-          cat clothing-audit.json
+          curl -fL --retry 2 https://github.com/qi3474942281/dol-web/releases/download/dol-web-offline-clothing-audit/DoL-0.5.12.13-BESC-UCB-Offline-Clothing-Audit.zip -o /tmp/game.zip
+          python3 -m zipfile -e /tmp/game.zip /tmp/dol-offline
+      - run: npm install --no-save playwright@1.56.1
+      - run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory /tmp/dol-offline &
+          node tools/verify_audit_browser.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clothing-audit-refined
+          path: clothing-audit-refined.json

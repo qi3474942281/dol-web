@@ -47,10 +47,16 @@ try {
     for(const mannequin of [true,false]){
      model.reset();
      const options=model.defaultOptions();
-     Object.assign(options,{mannequin,show_face:false,show_hair:false,breasts:'default',breast_size:3});
+     Object.assign(options,{mannequin,show_face:false,show_hair:false,breasts:'default',breast_size:3,alt_override:mannequin?1:0});
      options.worn[slot].index=index;
      options.worn[slot].colour=item.colour_options?.[0]||'';
      options.worn[slot].accColour=item.accessory_colour_options?.[0]||'';
+     options.worn[slot].pattern=item.pattern_options?.[0]||'';
+     const hold=item.holdPosition;
+     if(slot==='handheld'||hold){
+      options.arm_right=['left_cover','left_idle','left_hold','idle_both'].includes(hold)?'idle':(['right_cover','cover_both'].includes(hold)?'cover':'hold');
+      options.arm_left=hold==='left_hold'?'hold':(['left_cover','cover_both','clutch'].includes(hold)?'cover':'idle');
+     }
      for(const [secondary,name] of Object.entries(item.outfitPrimary||{})){
       const linked=config.clothes[secondary]?.findIndex(x=>x.name===name);
       if(linked>0&&options.worn[secondary])options.worn[secondary].index=linked;
@@ -88,7 +94,8 @@ try {
   return stats;
  });
  for(const key of ['upper/diving','legs/nursesocks','feet/trainers'])assert.equal(audit.reportedExamples[key],2,key);
- await (await import('node:fs/promises')).writeFile('release-offline/clothing-audit.json',JSON.stringify(audit,null,2)+'\n');
+ await (await import('node:fs/promises')).writeFile('clothing-audit-refined.json',JSON.stringify(audit,null,2)+'\n');
+ console.log('Unavailable paths:',JSON.stringify(audit.missing));
  console.log('Clothing combinations checked:',audit.items,'rendered:',audit.drawn,'no dedicated layer:',audit.noImage.length,'unresolved paths:',audit.missing.length);
  console.log('PASS: WebKit started the standalone HTML with all subsequent HTTP requests blocked, and read the matching original body, both dress layers, and the town image.');
 } finally {
