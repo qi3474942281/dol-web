@@ -12,7 +12,7 @@ await context.addInitScript(()=>{
  }
 });
 const page=await context.newPage();const base='http://127.0.0.1:8765/';
-let phase='legacy',reset=false,chunkRequests=0;const forbidden=[],errors=[],images=[];
+let phase='legacy',reset=false,rateLimited=false,limitedURL,limitedAt,retriedAt,chunkRequests=0;const forbidden=[],errors=[],images=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')console.log('browser-error:',m.text().slice(0,500));});
 await context.route('**/*',async route=>{
@@ -22,6 +22,8 @@ await context.route('**/*',async route=>{
   if(/\/mobile\/(core|mods)\/.+\.bin$/.test(u.pathname)){
    chunkRequests++;
    if(!reset){reset=true;await route.abort('connectionreset');return;}
+   if(!rateLimited){rateLimited=true;limitedURL=u.href;limitedAt=Date.now();await route.fulfill({status:429,headers:{'Retry-After':'1'},contentType:'text/html',body:'Too many requests'});return;}
+   if(u.href===limitedURL&&retriedAt===undefined)retriedAt=Date.now();
   }
   if(u.pathname.startsWith('/mobile/art/'))images.push(u.pathname);
  }
@@ -50,6 +52,8 @@ try{
  assert.equal(await page.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
  assert.equal(await page.evaluate(()=>window.DOLMobileLoadReport?.complete),true);
  assert.ok(await page.evaluate(()=>window.DOLMobileLoadReport.retries)>=1,'dropped chunk was retried');
+ assert.equal(rateLimited,true);assert.ok(retriedAt-limitedAt>=1000,'server Retry-After respected');
+ assert.ok(await page.evaluate(()=>window.DOLHttpQueue.rateLimitCount)>=1);
  assert.equal(forbidden.length,0,'no monolithic HTML or artwork ZIP request');
  assert.equal(await page.evaluate(()=>localStorage.getItem('mobile-preserve-local')),'keep');
  assert.equal(await page.evaluate(()=>sessionStorage.getItem('mobile-preserve-session')),'keep');

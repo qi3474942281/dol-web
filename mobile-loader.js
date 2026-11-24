@@ -10,33 +10,32 @@
  function update(){progress.value=Math.min(99,state.received/total*100);detail.textContent=(state.received/1048576).toFixed(1)+' / '+(total/1048576).toFixed(1)+' MB · 已校验 '+state.resources+' 个资源'+(state.retries?' · 自动重试 '+state.retries+' 次':'');}
  async function resource(item){
   for(let attempt=0;attempt<4;attempt++){
-   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),45000);
    try{
-    const r=await fetch(item.path,{signal:controller.signal,cache:attempt?'reload':'force-cache'});
-    if(!r.ok)throw Error('HTTP '+r.status);
-    const data=new Uint8Array(await r.arrayBuffer());
+    const data=await window.DOLHttpQueue.read(item.path,{timeoutMs:45000,cache:attempt?'reload':'force-cache'});
     if(data.length!==item.bytes||await hash(data)!==item.sha256)throw Error('资源长度或校验不符');
     state.received+=data.length;state.resources++;update();return data;
    }catch(error){
+    if(error.rateLimited)throw error;
     if(attempt===3)throw Error('资源多次加载失败：'+item.path+'\n'+error.message);
     state.retries++;detail.textContent='连接中断，正在重试当前小文件……';await pause(500*(attempt+1));
-   }finally{clearTimeout(timer);}
+   }
   }
  }
  async function parallel(items,fn){
   const result=new Array(items.length);let next=0;
-  await Promise.all(Array.from({length:Math.min(3,items.length)},async()=>{
+  await Promise.all(Array.from({length:Math.min(2,items.length)},async()=>{
    while(next<items.length){const index=next++;result[index]=await fn(items[index],index);}
   }));return result;
  }
  function base64(bytes){const parts=[];for(let i=0;i<bytes.length;i+=32768)parts.push(String.fromCharCode(...bytes.subarray(i,i+32768)));return btoa(parts.join(''));}
  async function main(){
   $('retry').onclick=()=>location.reload();
+  if(!window.DOLHttpQueue)throw Error('加载组件暂不可用，请稍后重新打开本页，不要连续刷新。');
   if(!window.DecompressionStream||!crypto?.subtle)throw Error('当前浏览器缺少资源解压或校验功能，请使用新版 Safari/Chrome。');
   status.textContent='正在检查已有存档备份……';
   await bound(DOLBackup.ensure(),30000,'存档备份检查超时。原存档未清除，请关闭其他游戏标签页再重试。');
   status.textContent='正在读取资源清单……';
-  const manifest=await bound(fetch('mobile/manifest.json?mobile=6',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('资源清单 HTTP '+r.status);return r.json();}),20000,'资源清单连接超时，请重试。');
+  const manifest=JSON.parse(new TextDecoder().decode(await window.DOLHttpQueue.read('mobile/manifest.json?mobile=6',{cache:'no-cache',timeoutMs:20000})));
   if(manifest.build!==state.build||manifest.mods.length!==26||!manifest.core.length)throw Error('手机资源版本不符，请稍后重试。');
   total=manifest.core.reduce((n,p)=>n+p.bytes,0)+manifest.mods.reduce((n,m)=>n+m.bytes,0);
   status.textContent='正在分批加载游戏……';
