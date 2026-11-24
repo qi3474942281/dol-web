@@ -1,49 +1,47 @@
-/* Keep prepared game data separate from every game and backup database. */
+/* Keep cached bytes separate from every game and backup database. */
 (() => {
- const open = () => new Promise((resolve, reject) => {
-  const request = indexedDB.open('DoLMobileResources', 1);
-  request.onupgradeneeded = () => request.result.createObjectStore('startup');
-  request.onerror = () => reject(request.error);
-  request.onsuccess = () => resolve(request.result);
- });
-
- async function access(mode, operation) {
-  const db = await open();
-  try {
-   return await new Promise((resolve, reject) => {
-    const transaction = db.transaction('startup', mode);
-    const request = operation(transaction.objectStore('startup'));
-    transaction.oncomplete = () => resolve(request.result);
-    transaction.onabort = () => reject(transaction.error);
-   });
-  } finally {
-   db.close();
-  }
+ function database(name, storeName) {
+  let connection;
+  return function open() {
+   connection ??= new Promise((resolve, reject) => {
+    const request = indexedDB.open(name, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore(storeName);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+     const db = request.result;
+     db.onversionchange = () => { db.close(); connection = null; };
+     resolve(db);
+    };
+   }).catch(error => { connection = null; throw error; });
+   return connection;
+  };
  }
 
- let artwork;
- function artCache() {
-  artwork ??= Promise.resolve().then(() => caches.open('dol-mobile-art-v1')).catch(() => null);
-  return artwork;
+ const startup = database('DoLMobileResources', 'startup');
+ const art = database('DoLMobileArtwork', 'images');
+
+ async function access(open, storeName, mode, operation) {
+  const db = await open();
+  return new Promise((resolve, reject) => {
+   const transaction = db.transaction(storeName, mode);
+   const request = operation(transaction.objectStore(storeName));
+   transaction.oncomplete = () => resolve(request.result);
+   transaction.onabort = () => reject(transaction.error);
+  });
  }
 
  window.DOLMobileCache = {
-  read(build) { return access('readonly', store => store.get(build)); },
+  read(build) { return access(startup, 'startup', 'readonly', store => store.get(build)); },
   write(build, data) {
-   return access('readwrite', store => {
-    // Build and mods are committed together, so an interrupted write keeps the old copy.
+   return access(startup, 'startup', 'readwrite', store => {
+    // Commit the game and mods together, so an interrupted write keeps the old copy.
     store.clear();
     return store.put(data, build);
    });
   },
-  async readArt(url) {
-   const cache = await artCache();
-   const response = await cache?.match(url);
-   return response && new Uint8Array(await response.arrayBuffer());
-  },
-  async writeArt(url, bytes, mime) {
-   const cache = await artCache();
-   if (cache) await cache.put(url, new Response(bytes, {headers: {'Content-Type': mime}}));
+  readArt(url) { return access(art, 'images', 'readonly', store => store.get(url)); },
+  writeArt(url, bytes) {
+   return access(art, 'images', 'readwrite', store => store.put(bytes, url));
   },
  };
 })();

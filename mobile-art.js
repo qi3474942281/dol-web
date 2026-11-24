@@ -25,7 +25,7 @@
     const digest=await crypto.subtle.digest('SHA-256',bytes);
     const sha=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
     if(sha!==file.split('.')[0])throw Error('Artwork integrity error: '+file);
-    void window.DOLMobileCache.writeArt(url,bytes,mime).catch(()=>{});
+    void window.DOLMobileCache.writeArt(url,bytes).catch(()=>{});
    }
    const urlData=await dataURL(new Blob([bytes],{type:mime}));
    recent.set(file,urlData);
