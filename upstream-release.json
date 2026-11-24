@@ -1,9 +1,50 @@
 {
   "tag": "v0.5.12.13-chs-1.0.1a",
-  "build": "dol-051213-chs101a-2",
+  "build": "dol-051213-chs101a-3",
   "source": "https://github.com/Eltirosto/Degrees-of-Lewdity-Chinese-Localization/releases/tag/v0.5.12.13-chs-1.0.1a",
-  "game_bytes": 101432865,
-  "offline_bytes": 41228603,
+  "game_bytes": 83137309,
+  "offline_bytes": 105619069,
+  "offline_url": "https://github.com/qi3474942281/dol-web/releases/download/dol-web-besc-ucb-3/dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip",
+  "artwork": {
+    "mode": "BESC+UCB",
+    "source": "https://github.com/DoL-Lyra/Lyra/releases/download/v0.5.12.13-1.0.1a-1004.1/DoL-0.5.12.13-Lyra-1.0.1a-besc-ucb-1004.1.zip",
+    "tag": "v0.5.12.13-1.0.1a-1004.1",
+    "source_sha256": "47a793b1c06c36aea5388d9743d50f1ab2557deae6c4155f92cded5a237b7b70",
+    "images": 32779,
+    "replaced_original_images": 9688,
+    "samples": {
+      "body": {
+        "path": "img/body/base-classic.png",
+        "sha256": "a60813d1f43f0c25edac7f53cfc46bbca85dda6e90975a4d5dfba01bcc8a0d89"
+      },
+      "face": {
+        "path": "img/face/default/aloof/brow-low.png",
+        "sha256": "94ff6f0ae819f3c9b3eaba1b3c6c7f9030549f39d83c160d380037add4355ce0"
+      },
+      "hair": {
+        "path": "img/hair/back/afro pouf/feet.png",
+        "sha256": "ebefe70cb83dcb78b1f111464a2c78265cc27349703bfe55d8ce7961735d2501"
+      },
+      "clothes": {
+        "path": "img/clothes/belly/belly-mask-lower-shadow-2.png",
+        "sha256": "0e9653064eabacfef0b9a260e206f20cecc0f220eebef6aaa1e5b1651a626838"
+      },
+      "sex": {
+        "path": "img/sex/close/chest/0.png",
+        "sha256": "1cf1bee8862a6397135dbc1907227c484dc9c0d9798195fcab1030cbc93d0095"
+      }
+    }
+  },
+  "install_files": [
+    {
+      "path": "game.html",
+      "bytes": 83137309
+    },
+    {
+      "path": "mods/DoLWebArtPack.mod.zip",
+      "bytes": 80883515
+    }
+  ],
   "previous_commit": "c3cb029bfdb5ac5f620786bed7201a2bc47ef716",
   "previous_version": "0.5.0.6-chs-2.1.0a",
   "ifid": "A6AFB52D-38F2-4CB5-86A8-54BF665670D6",
@@ -22,8 +63,9 @@
     }
   },
   "deployed": {
-    "game.html": "689c056c7ee21322065dc533ade66790dc72910063c59e661ef63d3e414939cf",
-    "dol-0.5.12.13-chs-1.0.1a-offline.zip": "726a16c207308e0ed6129999ba1213315ae5fef322d17128681c1ec47b5c5065",
+    "game.html": "9408de035994247cb7bf92d2820124e49fcd6f42908a9b9666e0cf03a5da43a4",
+    "dol-0.5.12.13-chs-1.0.1a-BESC-UCB-offline.zip": "168e7e23585a2713749ac6483b0e2fec276e08c37c62c5e292344ac8c416ff85",
+    "mods/DoLWebArtPack.mod.zip": "9d56bb5d1bc81cf0f10d53ab2e75a43fdb47cb6726603e309a08a5c5b6b6fe51",
     "legacy.html": "c56dbcb5f94346d1f44510084f5579b9cddd05b5d57167ae1089ee45e18e76b0",
     "mods/ModI18N.mod.zip": "af3950ec751442dbf6af5dac42ae3cee0fea67fc1944a836ffc8c3a8e5407be3",
     "mods/GameOriginalImagePack.mod.zip": "2281b8784f034ab8eb027cdca77019b626fbc50905bc2b18229f5e40ef152076",
