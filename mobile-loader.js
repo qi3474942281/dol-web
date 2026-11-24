@@ -1,8 +1,8 @@
-/* No service worker or CacheStorage dependency; verified small HTTP resources. */
+/* Reuse a verified assembly when local storage is available. */
 (() => {
  const $=id=>document.getElementById(id);
  const status=$('status'),detail=$('detail'),progress=$('progress');
- const state={build:'dol-mobile-6',received:0,retries:0,resources:0};window.DOLMobileLoadReport=state;
+ const state={build:'dol-mobile-8',received:0,retries:0,resources:0};window.DOLMobileLoadReport=state;
  let total=1;
  const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  function bound(p,ms,message){let timer;return Promise.race([p,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error(message)),ms))]).finally(()=>clearTimeout(timer));}
@@ -23,19 +23,32 @@
  }
  async function parallel(items,fn){
   const result=new Array(items.length);let next=0;
-  await Promise.all(Array.from({length:Math.min(2,items.length)},async()=>{
+  await Promise.all(Array.from({length:Math.min(4,items.length)},async()=>{
    while(next<items.length){const index=next++;result[index]=await fn(items[index],index);}
   }));return result;
  }
  function base64(bytes){const parts=[];for(let i=0;i<bytes.length;i+=32768)parts.push(String.fromCharCode(...bytes.subarray(i,i+32768)));return btoa(parts.join(''));}
+ function start({core, mods}){
+  state.complete=true;progress.value=100;status.textContent='资源已就绪，正在进入游戏……';
+  window.__DOLMobilePreparedMods=mods;
+  // Keep the game on the same origin and reuse its existing save identifiers.
+  return pause(0).then(()=>{document.open();document.write(core);document.close();});
+ }
  async function main(){
   $('retry').onclick=()=>location.reload();
   if(!window.DOLHttpQueue)throw Error('加载组件暂不可用，请稍后重新打开本页，不要连续刷新。');
   if(!window.DecompressionStream||!crypto?.subtle)throw Error('当前浏览器缺少资源解压或校验功能，请使用新版 Safari/Chrome。');
   status.textContent='正在检查已有存档备份……';
   await bound(DOLBackup.ensure(),30000,'存档备份检查超时。原存档未清除，请关闭其他游戏标签页再重试。');
+  status.textContent='正在读取本机游戏缓存……';
+  const cached=await bound(window.DOLMobileCache.read(state.build),2500,'读取本机资源超时').catch(()=>null);
+  if(typeof cached?.core==='string'&&/^<!doctype html>/i.test(cached.core)&&
+     cached.mods?.length===26&&cached.mods.every(mod=>typeof mod==='string')){
+   state.cached=true;
+   return start(cached);
+  }
   status.textContent='正在读取资源清单……';
-  const manifest=JSON.parse(new TextDecoder().decode(await window.DOLHttpQueue.read('mobile/manifest.json?mobile=6',{cache:'no-cache',timeoutMs:20000})));
+  const manifest=JSON.parse(new TextDecoder().decode(await window.DOLHttpQueue.read('mobile/manifest.json?mobile=8',{cache:'no-cache',timeoutMs:20000})));
   if(manifest.build!==state.build||manifest.mods.length!==26||!manifest.core.length)throw Error('手机资源版本不符，请稍后重试。');
   total=manifest.core.reduce((n,p)=>n+p.bytes,0)+manifest.mods.reduce((n,m)=>n+m.bytes,0);
   status.textContent='正在分批加载游戏……';
@@ -56,11 +69,11 @@
    if(offset!==mod.bytes||await hash(bytes)!==mod.sha256)throw Error('模组校验失败：'+mod.name);
    prepared.push(base64(bytes));
   }
-  state.complete=true;progress.value=100;status.textContent='资源已校验，正在进入游戏……';
-  window.__DOLMobilePreparedMods=prepared;
-  // Writing into the same document keeps the origin, URL, save identifiers and
-  // normal game scripts. The browser never navigates to an 83 MB HTML response.
-  await pause(0);document.open();document.write(core);document.close();
+  const assembly={core,mods:prepared};
+  status.textContent='正在保存已校验的资源，下次可直接读取……';
+  state.saved=await bound(window.DOLMobileCache.write(state.build,assembly),4000,'保存本机资源超时')
+   .then(()=>true,()=>false);
+  return start(assembly);
  }
  main().catch(error=>{status.textContent='尚未完成加载';$('error').textContent=error.message+'\n原存档未清除。已收到的小文件可由浏览器缓存复用。';$('retry').hidden=false;console.error(error);});
 })();

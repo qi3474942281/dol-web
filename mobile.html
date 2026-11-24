@@ -42,7 +42,8 @@
     while(waiting.length&&active<concurrency&&!halted){
      const delay=Math.max(blockedUntil,nextStart)-now();
      if(delay>0){if(blockedUntil>now())notify();await sleep(delay);continue;}
-     const job=waiting.shift();nextStart=now()+gap;active++;void run(job);
+     const important=waiting.findIndex(item=>item.options.priority!=='background');
+     const [job]=waiting.splice(Math.max(important,0),1);nextStart=now()+gap;active++;void run(job);
     }
    }finally{pumping=false;if(waiting.length&&active<concurrency&&!halted)void pump();}
   }
@@ -64,6 +65,6 @@
   };render();if(!halted)timer=setInterval(render,1000);
  }
  let storage;try{storage=root.sessionStorage;}catch{}
- root.DOLHttpQueue=createHttpQueue({storage,onCooldown:banner});
+ root.DOLHttpQueue=createHttpQueue({storage,onCooldown:banner,concurrency:4,gapMs:100});
 })(typeof window==='undefined'?globalThis:window);
-</script><script src="mobile-loader.js?mobile=7"></script></body></html>
+</script><script src="mobile-cache.js?mobile=8"></script><script src="mobile-loader.js?mobile=8"></script></body></html>
