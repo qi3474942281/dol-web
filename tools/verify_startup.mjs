@@ -18,12 +18,13 @@ async function run(fault){
  }
  const pending=()=>new Promise(()=>{});
  const cache={match:async key=>{hits.push(key);return fault==='match'?pending():{};}};
- const ctx={document:{getElementById:id=>nodes[id]},location:{href:'https://example.test/dol-web/launch.html',replace:url=>destination=url,assign(){}},
+ const ctx={document:{getElementById:id=>nodes[id]},location:{href:'https://example.test/dol-web/start.html',origin:'https://example.test',replace:url=>destination=url,assign(){}},
   DOLBackup:{ensure:()=>fault==='backup'?pending():Promise.resolve()},
-  navigator:{serviceWorker:{controller:{postMessage(message,ports){if(fault!=='worker')ports[0].reply('startup-4');}},register(url){registration=url;return pending();}}},
+  navigator:{serviceWorker:{controller:{scriptURL:'https://example.test/dol-web/sw.js?build='+(fault==='worker'?'old-build':'dol-051213-chs101a-3'),postMessage(){}},addEventListener(){},register(url){registration=url;return pending();}}},
   caches:{open:()=>fault==='cache'?pending():Promise.resolve(cache)},
   URL,MessageChannel:Channel,Promise,Date,Error,
   setTimeout:(fn,ms)=>setTimeout(fn,Math.min(ms,15)),clearTimeout};
+ if(fault==='no-worker')delete ctx.navigator.serviceWorker;
  vm.runInNewContext(installer,ctx);
  for(let i=0;i<100;i++){
   if(destination||nodes.error.textContent)break;
@@ -34,12 +35,20 @@ async function run(fault){
 const cached=await run();
 assert.match(cached.destination,/game\.html\?build=dol-051213-chs101a-3$/);
 assert.equal(cached.hits.length,2);assert.equal(cached.nodes.progress.value,100);
-for(const [fault,stage,error] of [
- ['backup','存档','存档备份超时'],['worker','组件','离线缓存组件加载超时'],
- ['cache','缓存','打开本机文件缓存超时'],['match','缓存','读取本机文件缓存超时']]){
+const backupTimeout=await run('backup');
+assert.equal(backupTimeout.destination,undefined);
+assert.match(backupTimeout.nodes.error.textContent,/存档备份超时/);
+assert.equal(backupTimeout.nodes.retry.hidden,false);
+for(const fault of ['worker','no-worker','cache','match']){
  const result=await run(fault);
- assert.equal(result.destination,undefined);
- assert.ok(result.nodes.error.textContent.includes(error),fault+': '+result.nodes.error.textContent);
- assert.equal(result.nodes.retry.hidden,false);
+ assert.match(result.destination,/online\.html\?build=dol-051213-chs101a-3$/,fault);
 }
-console.log('PASS: snapshot metadata-only check, existing game/art cache reused, backup/worker/cache-open/cache-read timeouts offer retry.');
+// Service worker installation must succeed even if every cache operation fails.
+const events={};let cacheTouches=0;
+vm.runInNewContext(await fs.readFile('sw.js','utf8'),{
+ self:{location:{href:'https://example.test/dol-web/sw.js'},addEventListener:(name,cb)=>events[name]=cb,skipWaiting:()=>Promise.resolve(),clients:{claim:()=>Promise.resolve()}},
+ URL,Promise,setTimeout,clearTimeout,caches:{open(){cacheTouches++;throw Error('Storage unavailable');}}
+});
+let installed;events.install({waitUntil:p=>installed=p});await installed;
+assert.equal(cacheTouches,0);
+console.log('PASS: snapshot metadata-only check; same-build worker accepted without messaging; game/art cache reused; worker/cache failures use online entry; backup timeout offers retry; worker activation does not download shell files.');

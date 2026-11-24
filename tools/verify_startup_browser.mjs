@@ -1,7 +1,7 @@
 import {chromium,webkit,devices} from 'playwright';
 import assert from 'node:assert/strict';
 const kind=process.argv[2]||'chromium';
-const browser=await ({chromium,webkit}[kind]).launch(kind==='chromium'?{channel:'chrome'}:{});
+const browser=await ({chromium,webkit}[kind]).launch(process.env.DOL_CONTAINER?{}:kind==='chromium'?{channel:'chrome'}:{});
 const context=await browser.newContext({...devices['iPhone 13']});
 const page=await context.newPage();
 const base='http://127.0.0.1:8765/';
@@ -33,7 +33,7 @@ try{
  });
  let requests=0;
  context.on('request',r=>{if(r.url().includes('upstream-release.json')||r.url().includes('/mods/DoLWebArtPack.mod.zip'))requests++;});
- await page.goto(base+'launch.html?startup=4');
+ await page.goto(base+'start.html?startup=5');
  await page.waitForURL(/game\.html\?build=dol-051213-chs101a-3/,{timeout:90000});
  await page.locator('#cached-fixture').waitFor();
  assert.equal(requests,0,'already cached game/art files must not be downloaded again');
@@ -43,5 +43,23 @@ try{
   const r=indexedDB.open('degrees-of-lewdity');r.onerror=()=>reject(r.error);r.onsuccess=()=>{const db=r.result;const q=db.transaction('saves').objectStore('saves').get(7);q.onsuccess=()=>{db.close();resolve(q.result.marker);};q.onerror=()=>reject(q.error);};
  }));
  assert.equal(saved,'real-save-fixture');
- console.log('PASS '+kind+': new backup preserves IndexedDB saves; existing backup is not deserialized at startup; cached game/art reused; local/session saves intact.');
+ await context.close();
+ const fallback=await browser.newContext({...devices['iPhone 13']});
+ await fallback.addInitScript(()=>{
+  localStorage.setItem('verifiedAge','true');
+  localStorage.setItem('online-save-sentinel','preserved');
+  if('serviceWorker' in navigator)navigator.serviceWorker.register=()=>Promise.reject(Error('Test: worker registration unavailable'));
+ });
+ const fp=await fallback.newPage();
+ await fp.goto(base+'start.html?fallback-test=5');
+ await fp.waitForURL(/online\.html\?build=dol-051213-chs101a-3/,{timeout:30000});
+ await fp.waitForFunction(()=>window.SugarCube?.State?.passage||document.getElementById('dol-startup-error'),null,{timeout:240000});
+ assert.equal(await fp.locator('#dol-startup-error').count(),0,'online game startup rejected');
+ assert.equal(await fp.evaluate(()=>window.DOLWebArtReport?.images),32779);
+ assert.equal(await fp.evaluate(()=>window.DOLWebCompatibilityReport?.length),6);
+ assert.equal(await fp.evaluate(()=>window.modSC2DataManager.getLanguageManager().mainLanguage),'zh');
+ assert.match(await fp.locator('#passages').innerText(),/[\u4e00-\u9fff]{3}/);
+ assert.equal(await fp.evaluate(()=>localStorage.getItem('online-save-sentinel')),'preserved');
+ await fallback.close();
+ console.log('PASS '+kind+': new backup preserves IndexedDB saves; existing backup is not deserialized at startup; cached game/art reused; local/session saves intact; blocked worker registration boots real Chinese game with full artwork through online.html.');
 }finally{await browser.close();}
