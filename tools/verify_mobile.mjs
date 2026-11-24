@@ -1,6 +1,7 @@
 import {chromium,webkit,devices} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 const kind=process.argv[2]||'chromium';
 const browser=await ({chromium,webkit}[kind]).launch();
 const context=await browser.newContext({...devices['iPhone 13']});
@@ -12,11 +13,16 @@ await context.addInitScript(()=>{
  }
 });
 const page=await context.newPage();const base='http://127.0.0.1:8765/';
-let phase='legacy',warmRequests=0,reset=false,rateLimited=false,limitedURL,limitedAt,retriedAt,chunkRequests=0;const forbidden=[],errors=[],images=[];
+let phase='legacy',warmRequests=0,warmDressRequests=0,dressAsset,reset=false,rateLimited=false,limitedURL,limitedAt,retriedAt,chunkRequests=0;const forbidden=[],errors=[],images=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')console.log('browser-error:',m.text().slice(0,500));});
 await context.route('**/*',async route=>{
  const u=new URL(route.request().url());
+ if(phase==='warm'&&u.pathname===dressAsset){
+  warmDressRequests++;
+  await route.abort('connectionreset');
+  return;
+ }
  if(phase==='warm'&&/\/mobile\/(core|mods|manifest)/.test(u.pathname)){
   warmRequests++;
   await route.abort('connectionreset');
@@ -163,6 +169,9 @@ try{
  await fs.mkdir('verification',{recursive:true});
  await page.screenshot({path:'verification/mobile-'+kind+'.png',fullPage:true});
  const coldReport=await page.evaluate(()=>window.DOLMobileLoadReport);
+ const dressData=await page.evaluate(path=>modImgLoaderHooker.getImage(path),dressLayers[0]);
+ const dressHash=createHash('sha256').update(Buffer.from(dressData.split(',')[1],'base64')).digest('hex');
+ dressAsset='/mobile/art/'+dressHash+'.png';
  // Close the page and reopen with all boot data requests denied.
  phase='warm';
  await page.close();
@@ -173,14 +182,12 @@ try{
  const warmMs=Date.now()-warmStart;
  assert.equal(warmRequests,0);
  assert.equal(await warmPage.evaluate(()=>DOLMobileLoadReport.cached),true);
- const before=images.length;
- phase='mobile';
  const cachedArt=await warmPage.evaluate(async path=>{
   const image=await modImgLoaderHooker.getImage(path);
   return image?.startsWith('data:image/');
  },dressLayers[0]);
  assert.equal(cachedArt,true);
- assert.equal(images.length,before,'a previously shown dress is available without a new image request');
+ assert.equal(warmDressRequests,0,'the same dress layer loads with its network route disabled');
  await fs.writeFile('verification/mobile-'+kind+'.json',JSON.stringify({browser:kind,saveId,samples,chunkRequests,artRequests:new Set(images).size,coldMs,warmMs,dressTiming,report:coldReport},null,2));
  console.log('PASS cached reopen',JSON.stringify({coldMs,warmMs,warmRequests,dressTiming}));
  console.log('PASS',kind,'real old local/IndexedDB saves preserved; Chinese + 32779 lazy art entries; interrupted chunk retried; no worker/cache dependency or monolithic HTML/ZIP download.');
