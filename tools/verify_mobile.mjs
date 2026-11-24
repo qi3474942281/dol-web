@@ -94,9 +94,18 @@ try{
  },manifest.artwork.samples);
  for(const [name,item] of Object.entries(manifest.artwork.samples)){assert.equal(samples[name].hash,item.sha256);assert.ok(samples[name].width>0&&samples[name].height>0);}
  const dressLayers=['img/clothes/upper/tie front dress/full.png','img/clothes/lower/tie front dress/full.png'];
+ const otherClothes={
+  'img/clothes/face/gasmask/full.png':512,
+  'img/clothes/head/newsboy/full.png':512,
+  'img/clothes/upper/exorcisthabit/full.png':512,
+  'img/clothes/lower/exorcisthabit/full.png':512,
+  'img/clothes/lower/gingham/full.png':512,
+  'img/clothes/under-lower/latexleotard/full.png':512,
+  'img/clothes/feet/trainers/full.png':256,
+ };
  const dressTiming=await page.evaluate(async paths=>{
   const start=performance.now();
-  const layer={scale:true,model:{height:256}};
+  const layer={scale:true,model:{name:'main',height:256,width:256}};
   const rendered=await Promise.all(paths.map(path=>new Promise((resolve,reject)=>{
    Renderer.DefaultImageLoader.loadImage(path,layer,(_,__,image)=>{
     const pixels=image.getContext('2d').getImageData(0,0,image.width,image.height).data;
@@ -109,11 +118,17 @@ try{
    },(_,__,error)=>reject(error));
   })));
   return {elapsedMs:performance.now()-start,rendered};
- },dressLayers);
- assert.deepEqual(dressTiming.rendered,[
+ },[...dressLayers,...Object.keys(otherClothes)]);
+ assert.deepEqual(dressTiming.rendered.slice(0,2),[
   {width:512,height:256,top:94,bottom:139},
   {width:512,height:256,top:112,bottom:175},
  ],'shop dress layers retain both frames and align in the 256-pixel model');
+ for(const [i,[path,width]] of Object.entries(otherClothes).entries()){
+  const actual=dressTiming.rendered[i+2];
+  assert.equal(actual.width,width,'whole-frame width: '+path);
+  assert.equal(actual.height,256,'model height: '+path);
+  assert.ok(actual.top<actual.bottom,'visible artwork: '+path);
+ }
  const locationLights=await page.evaluate(async()=>{
   const results=await Promise.all(['emissive-evening.png','red.png'].map(file=>ImageCache.getOrCreate('img/misc/locations/office/'+file)));
   return results.map(image=>[image.width,image.height]);

@@ -12,6 +12,22 @@ def patch_renderers(source):
     start = source.index('/* twine-user-script #19:')
     end = source.index('/* twine-user-script #20:', start)
     renderer = source[start:end]
+    # These sheets are one or two model frames wide. A few source PNGs
+    # are off by several pixels, which makes the frame index fractional.
+    renderer = replace(renderer, 'function rescaleImageToCanvasHeight(scale, image, targetHeight) {',
+                       'function rescaleImageToCanvasHeight(scale, image, targetHeight, frameWidth) {')
+    renderer = replace(renderer, 'const scaledWidth = scale ? targetHeight * aspectRatio : image.width;', """
+        let scaledWidth = scale ? targetHeight * aspectRatio : image.width;
+        if (scale && frameWidth > 0) {
+            const frameCount = Math.round(scaledWidth / frameWidth);
+            const alignedWidth = frameCount * frameWidth;
+            if (frameCount > 0 && Math.abs(alignedWidth - scaledWidth) <= 4) scaledWidth = alignedWidth;
+        }""".strip())
+    renderer = replace(renderer, 'const rescaledImage = rescaleImageToCanvasHeight(layer.scale, image, layer.model.height);', """
+                    const frameWidth = layer.model.name === "main" && typeof src === "string" && /^(?:\\.\\/)?img\\/clothes\\//.test(src)
+                        ? (layer.width || layer.model.width)
+                        : 0;
+                    const rescaledImage = rescaleImageToCanvasHeight(layer.scale, image, layer.model.height, frameWidth);""".strip())
     renderer = replace(renderer, '\t\t\t\timage.src = src;', '''
                 const artwork = window.DOLMobileArt?.source(src);
                 if (!artwork) {
