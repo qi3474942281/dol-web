@@ -18,13 +18,7 @@ def patch_renderers(source):
                     image.src = src;
                     return;
                 }
-                artwork.then(({src: url, release}) => {
-                    const loaded = image.onload;
-                    const failed = image.onerror;
-                    image.onload = () => { release(); loaded(); };
-                    image.onerror = event => { release(); failed(event); };
-                    image.src = url;
-                }, error => errorCallback(src, layer, error));'''.rstrip())
+                artwork.then(url => { image.src = url; }, error => errorCallback(src, layer, error));'''.rstrip())
     # A newer composition owns the same canvas even if an earlier set of
     # images finishes later.
     renderer = replace(renderer, '\tfunction composeLayers(targetCanvas, layerSpecs, frameCount, listener) {', '''
@@ -51,13 +45,7 @@ def patch_renderers(source):
         if (!artwork) {
             image.src = src;
         } else {
-            artwork.then(({src: url, release}) => {
-                const loaded = image.onload;
-                const failed = image.onerror;
-                image.onload = () => { release(); loaded(); };
-                image.onerror = event => { release(); failed(event); };
-                image.src = url;
-            }, error => {
+            artwork.then(url => { image.src = url; }, error => {
                 cacheEntries.delete(src);
                 rejectPromise(error);
             });
@@ -95,4 +83,8 @@ def patch_renderers(source):
         this.obj = location[locationKey].deepCopy();''')
     effect = replace(effect, 'for (const key in this.obj) {\n\t\t\t\tconst obj = this.obj[key];',
                        'for (const [key, obj] of Object.entries(this.obj)) {')
-    return source[:start] + effect + source[end:]
+    source = source[:start] + effect + source[end:]
+    start = source.index('name: "imageOverlay",')
+    end = source.index('\n});', start)
+    overlay = replace(source[start:end], '\tdraw() {\n', '\tdraw() {\n\t\tif (!this.images.overlay?.width || !this.elapsedTime) return;\n')
+    return source[:start] + overlay + source[end:]

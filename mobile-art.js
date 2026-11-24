@@ -27,10 +27,10 @@
     if(sha!==file.split('.')[0])throw Error('Artwork integrity error: '+file);
     void window.DOLMobileCache.writeArt(url,bytes,mime).catch(()=>{});
    }
-   const blob=new Blob([bytes],{type:mime});
-   recent.set(file,blob);
+   const urlData=await dataURL(new Blob([bytes],{type:mime}));
+   recent.set(file,urlData);
    if(recent.size>256)recent.delete(recent.keys().next().value);
-   return blob;
+   return urlData;
   })().finally(()=>pending.delete(file));
   pending.set(file,task);
   return task;
@@ -46,24 +46,21 @@
  }
 
  for(const [path,file] of mapping){
-  pack.selfImg.set(path,{path,getter:{invalid:false,getBase64Image:async()=>dataURL(await load(file,'background'))}});
+  pack.selfImg.set(path,{path,getter:{invalid:false,getBase64Image:()=>load(file,'background')}});
  }
 
  window.DOLMobileArt={
   // Canvas requests keep the ModLoader's explicit image overrides. Other paths
-  // in the bundled pack can be decoded directly from their original bytes.
+  // in the bundled pack use cached data URLs allowed by the game's policy.
   source(path){
    const hook=window.modImgLoaderHooker;
    const normalized=typeof path==='string'&&hook?.normalizePath(path);
    const file=byPath.get(normalized);
    if(!file)return null;
    if(hook.imgLookupTable?.has(normalized)){
-    return hook.getImage(normalized).then(src=>({src:src||path,release:()=>{}}));
+    return hook.getImage(normalized).then(src=>src||path);
    }
-   return load(file,'visible').then(blob=>{
-    const src=URL.createObjectURL(blob);
-    return {src,release:()=>URL.revokeObjectURL(src)};
-   }).catch(error=>{
+   return load(file,'visible').catch(error=>{
     error.dolArtwork=true;
     throw error;
    });
