@@ -1,18 +1,22 @@
-name: Verify mobile startup repair
+name: Verify mobile online fallback
 on:
   push:
-    branches: ['fix/mobile-startup']
-    paths: ['install.js', 'save-backup.js', 'sw.js', '*html', 'tools/verify_startup*.mjs', '.github/workflows/startup.yml']
+    branches: ['fix/direct-start']
+    paths: ['install.js', 'save-backup.js', 'sw.js', '*html', 'tools/verify_startup*.mjs', 'tools/serve_startup.mjs', '.github/workflows/startup.yml']
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   startup:
     runs-on: ubuntu-24.04
+    container: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, webkit]
+    env:
+      DOL_CONTAINER: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,7 +24,5 @@ jobs:
           node-version: '22'
       - run: node tools/verify_startup.mjs
       - run: npm install --no-save playwright@1.56.1
-      - run: npx playwright install --with-deps webkit
-        if: matrix.browser == 'webkit'
-      - run: python -m http.server 8765 > /tmp/dol-startup-server.log 2>&1 &
+      - run: node tools/serve_startup.mjs > /tmp/dol-startup-server.log 2>&1 &
       - run: node tools/verify_startup_browser.mjs ${{ matrix.browser }}
