@@ -69,9 +69,8 @@ try{
   const result={};
   for(const [name,item] of Object.entries(items)){
    const url=await modImgLoaderHooker.getImage(item.path);
-   if(!url.includes('/mobile/art/'))throw Error('Image provider did not use static artwork: '+item.path);
-   const r=await fetch(url);if(!r.ok)throw Error('Image HTTP '+r.status);
-   const data=await r.arrayBuffer();const digest=await crypto.subtle.digest('SHA-256',data);
+   if(!url.startsWith('data:image/'))throw Error('Image provider did not preserve the data URI contract: '+item.path);
+   const data=Uint8Array.from(atob(url.split(',')[1]),c=>c.charCodeAt(0));const digest=await crypto.subtle.digest('SHA-256',data);
    const img=new Image();img.src=url;await img.decode();
    result[name]={hash:Array.from(new Uint8Array(digest),x=>x.toString(16).padStart(2,'0')).join(''),width:img.naturalWidth,height:img.naturalHeight};
   }return result;

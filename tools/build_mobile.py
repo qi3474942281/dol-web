@@ -42,7 +42,28 @@ preload='''(async()=>{
  const pack=window.modGameOriginalImagePack;pack.init();
  const root=new URL('mobile/art/',document.baseURI);
  const mapping=MAPPING;
- for(const [path,file] of mapping){const url=new URL(file,root).href;pack.selfImg.set(path,{path,getter:{invalid:false,getBase64Image:async()=>url}});}
+ const imageCache=new Map();
+ async function loadImage(file){
+  if(imageCache.has(file)){const task=imageCache.get(file);imageCache.delete(file);imageCache.set(file,task);return task;}
+  const task=(async()=>{
+   let last;
+   for(let attempt=0;attempt<3;attempt++){
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+    try{
+     const r=await fetch(new URL(file,root).href,{signal:controller.signal,cache:attempt?'reload':'force-cache'});
+     if(!r.ok)throw Error('Image HTTP '+r.status);
+     const bytes=new Uint8Array(await r.arrayBuffer()),pieces=[];
+     for(let i=0;i<bytes.length;i+=32768)pieces.push(String.fromCharCode(...bytes.subarray(i,i+32768)));
+     const ext=file.slice(file.lastIndexOf('.'));const mime={'.png':'image/png','.gif':'image/gif','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml'}[ext]||'application/octet-stream';
+     return 'data:'+mime+';base64,'+btoa(pieces.join(''));
+    }catch(error){last=error;await new Promise(resolve=>setTimeout(resolve,300*(attempt+1)));}
+    finally{clearTimeout(timer);}
+   }throw last;
+  })().catch(error=>{imageCache.delete(file);throw error;});
+  imageCache.set(file,task);while(imageCache.size>256)imageCache.delete(imageCache.keys().next().value);
+  return task;
+ }
+ for(const [path,file] of mapping)pack.selfImg.set(path,{path,getter:{invalid:false,getBase64Image:()=>loadImage(file)}});
  window.DOLWebArtReport=REPORT;
 })();'''.replace('MAPPING',json.dumps(mapping,ensure_ascii=False,separators=(',',':'))).replace('REPORT',json.dumps(report,ensure_ascii=False,separators=(',',':')))
 files['dist/preload/preload.js']=preload.encode()
