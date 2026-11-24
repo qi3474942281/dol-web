@@ -1,378 +1,105 @@
 {
-  "build": "dol-mobile-6",
+  "build": "dol-mobile-8",
   "source_game_sha256": "9408de035994247cb7bf92d2820124e49fcd6f42908a9b9666e0cf03a5da43a4",
-  "core_sha256": "60820000a854189488257e3f94baf5e7abf76344d3523dc4017da24d35cef385",
-  "core_bytes": 54798630,
+  "core_sha256": "e91bd2662a92120c76e6a0e6a55c92768af1d2515524c689a389ad4037748334",
+  "core_bytes": 54800153,
   "core": [
     {
-      "path": "mobile/core/f84af92368d8aa078f8befe19f8d3375e39d5d9bd94e0da81b343014f51f5c42.bin",
-      "bytes": 336196,
-      "sha256": "f84af92368d8aa078f8befe19f8d3375e39d5d9bd94e0da81b343014f51f5c42",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/af049efc949c77af29e8f8c0f2e39100727df871f87ea071d98716deeb4b04fe.bin",
+      "bytes": 798137,
+      "sha256": "af049efc949c77af29e8f8c0f2e39100727df871f87ea071d98716deeb4b04fe",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/98c197162cbad2d1d25e243d7781353f2d344187bfb997c72b58eb7302e3a26f.bin",
-      "bytes": 173803,
-      "sha256": "98c197162cbad2d1d25e243d7781353f2d344187bfb997c72b58eb7302e3a26f",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/b843b640d33d6d3d2bcd694981681f7adce5818c6571c2defa21125a16f071cc.bin",
+      "bytes": 973663,
+      "sha256": "b843b640d33d6d3d2bcd694981681f7adce5818c6571c2defa21125a16f071cc",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/d4899f659555fd216b14cc93fc2cf5109646aeadc586efd34cdbcf683bf5cbed.bin",
-      "bytes": 159865,
-      "sha256": "d4899f659555fd216b14cc93fc2cf5109646aeadc586efd34cdbcf683bf5cbed",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/4fb7310bae379602ae8b55ca64802b6c1e2744500bea9fc8f52b58cf452e7305.bin",
+      "bytes": 543533,
+      "sha256": "4fb7310bae379602ae8b55ca64802b6c1e2744500bea9fc8f52b58cf452e7305",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/dc53e1b18df1ad3df189c5f608767435b6a2db8849238489ab21ad2c2f22ecac.bin",
-      "bytes": 130967,
-      "sha256": "dc53e1b18df1ad3df189c5f608767435b6a2db8849238489ab21ad2c2f22ecac",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/c431a23201c532566ac5811b0356936256070f888a03ed0dad06d92d0cb2f116.bin",
+      "bytes": 554814,
+      "sha256": "c431a23201c532566ac5811b0356936256070f888a03ed0dad06d92d0cb2f116",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/6c3d364d58baf6fac13a7b0f901f49f3405a8f5a55c8bfa836965c8a3658961e.bin",
-      "bytes": 260967,
-      "sha256": "6c3d364d58baf6fac13a7b0f901f49f3405a8f5a55c8bfa836965c8a3658961e",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/d963175a8cf72a112670ba5db9825df9a1696c3c252c84c04c574d3b3f725caf.bin",
+      "bytes": 719255,
+      "sha256": "d963175a8cf72a112670ba5db9825df9a1696c3c252c84c04c574d3b3f725caf",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/d446921f070db1979e715f1fe366876cb2a958b1b3e023881b6483b6c6c0aff4.bin",
-      "bytes": 304255,
-      "sha256": "d446921f070db1979e715f1fe366876cb2a958b1b3e023881b6483b6c6c0aff4",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/7607c2539a2e0a0a1493d9711fa0ae7ad04bb2dc16fba3f9c5a457da02bb7f08.bin",
+      "bytes": 799364,
+      "sha256": "7607c2539a2e0a0a1493d9711fa0ae7ad04bb2dc16fba3f9c5a457da02bb7f08",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/3576553e98bfadd70018be9edace7fc5529c17620c799046cade46a42ed3fd20.bin",
-      "bytes": 246150,
-      "sha256": "3576553e98bfadd70018be9edace7fc5529c17620c799046cade46a42ed3fd20",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/802d9aad6bec7e0014af0be2b0b076bf935f9afcd5fac50fffc85b5c5319779f.bin",
+      "bytes": 737715,
+      "sha256": "802d9aad6bec7e0014af0be2b0b076bf935f9afcd5fac50fffc85b5c5319779f",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/604447c9dee073a5f2a9101e89684b01f322ee469dae68502c8fe969ce24ff19.bin",
-      "bytes": 164755,
-      "sha256": "604447c9dee073a5f2a9101e89684b01f322ee469dae68502c8fe969ce24ff19",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/5a58fb8b6bceb0a47d29ddb9e2ab04bdcf61ad6cbf43e0a18b52c982cafc63b7.bin",
+      "bytes": 771528,
+      "sha256": "5a58fb8b6bceb0a47d29ddb9e2ab04bdcf61ad6cbf43e0a18b52c982cafc63b7",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/512fd3baf34fbff7b5823a1c4bdbedd1848ca6ba1abb2230772338f67d67bf52.bin",
-      "bytes": 108453,
-      "sha256": "512fd3baf34fbff7b5823a1c4bdbedd1848ca6ba1abb2230772338f67d67bf52",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/e982bf6bf89e5cd36b3579699cbf4a675932993f086562b4349db29cf1d0947e.bin",
+      "bytes": 788391,
+      "sha256": "e982bf6bf89e5cd36b3579699cbf4a675932993f086562b4349db29cf1d0947e",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/435b9b539f8a9ddf7b16a5d7ca5ffe86da3fd3e873ee7eb2249701c9b74c8119.bin",
-      "bytes": 192706,
-      "sha256": "435b9b539f8a9ddf7b16a5d7ca5ffe86da3fd3e873ee7eb2249701c9b74c8119",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/0c481e72f676e0128cd8977a200013118096dc90f457f8b64d2cac4db5b56076.bin",
+      "bytes": 760931,
+      "sha256": "0c481e72f676e0128cd8977a200013118096dc90f457f8b64d2cac4db5b56076",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/c311a9016a3ee04bff433884c2c6933a9780647a35928dcd1b8baa5ee5da6537.bin",
-      "bytes": 133332,
-      "sha256": "c311a9016a3ee04bff433884c2c6933a9780647a35928dcd1b8baa5ee5da6537",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/0c32889875e088ce3f8ac7a652f205f938385a33e90dbd9a91293a1e7cb32418.bin",
+      "bytes": 730075,
+      "sha256": "0c32889875e088ce3f8ac7a652f205f938385a33e90dbd9a91293a1e7cb32418",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/1c782c3c709aafef18b1738df33ecd275b025c0f28e4fbf422a22c3342d9280c.bin",
-      "bytes": 110687,
-      "sha256": "1c782c3c709aafef18b1738df33ecd275b025c0f28e4fbf422a22c3342d9280c",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/676c79508b07788d542ca30bf7cb4e29a41f52b41b2bd5b2b2b4fd9ceced1cc6.bin",
+      "bytes": 794498,
+      "sha256": "676c79508b07788d542ca30bf7cb4e29a41f52b41b2bd5b2b2b4fd9ceced1cc6",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/811b630c991b707172d1b6f5b749e6cc69e7a1b378cd66f8a8dd9f925dbb8f92.bin",
-      "bytes": 122661,
-      "sha256": "811b630c991b707172d1b6f5b749e6cc69e7a1b378cd66f8a8dd9f925dbb8f92",
-      "raw_bytes": 1048576,
+      "path": "mobile/core/5aeb95bc512194eacd8c277462a6ea9bd67fbf98e55bccede6399250813cb2f0.bin",
+      "bytes": 763467,
+      "sha256": "5aeb95bc512194eacd8c277462a6ea9bd67fbf98e55bccede6399250813cb2f0",
+      "raw_bytes": 4194304,
       "gzip": true
     },
     {
-      "path": "mobile/core/46a3255d603588db4d11444aad2c5bcc7ef369261a0358f58f2071d8db18ed7e.bin",
-      "bytes": 140095,
-      "sha256": "46a3255d603588db4d11444aad2c5bcc7ef369261a0358f58f2071d8db18ed7e",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/1b7868e9cf91dbbd98b2ca81b62cc8239860b95adca5fa98b1ebb401c26803ba.bin",
-      "bytes": 136036,
-      "sha256": "1b7868e9cf91dbbd98b2ca81b62cc8239860b95adca5fa98b1ebb401c26803ba",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/d4f1a522d4087d193384e77ff5b61e661d9c532a0d053190e843138f50444dba.bin",
-      "bytes": 158216,
-      "sha256": "d4f1a522d4087d193384e77ff5b61e661d9c532a0d053190e843138f50444dba",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/1553388fdf3dc6f9d103ade62e9a859310c05c0bba6beba9f1a84b394fe4ca8d.bin",
-      "bytes": 172389,
-      "sha256": "1553388fdf3dc6f9d103ade62e9a859310c05c0bba6beba9f1a84b394fe4ca8d",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/d5a7fd05989bf7403eca1d195479c52d845b31ce5fa109f9ccdd930b3ec086b3.bin",
-      "bytes": 173479,
-      "sha256": "d5a7fd05989bf7403eca1d195479c52d845b31ce5fa109f9ccdd930b3ec086b3",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/7f3711bcf903017423b89a832fadcc33af5589564f61191768388134a1ede854.bin",
-      "bytes": 191967,
-      "sha256": "7f3711bcf903017423b89a832fadcc33af5589564f61191768388134a1ede854",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/c4bd104c0eb663585a7569a9a49c88697f2ef2e2854f9b05e80a3bf30791d5c7.bin",
-      "bytes": 184551,
-      "sha256": "c4bd104c0eb663585a7569a9a49c88697f2ef2e2854f9b05e80a3bf30791d5c7",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/2d0e0ec06fdcac7fc108428e83fd505a21598106660c63026cfece282696f8e4.bin",
-      "bytes": 210067,
-      "sha256": "2d0e0ec06fdcac7fc108428e83fd505a21598106660c63026cfece282696f8e4",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/c9dc3cd97564013feef1406c07a3cf45b8833629cbc8ec2c71b61466c9f176ae.bin",
-      "bytes": 212250,
-      "sha256": "c9dc3cd97564013feef1406c07a3cf45b8833629cbc8ec2c71b61466c9f176ae",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/5b31001c1177b38ec608bb0309e284f8b50f4d75a9e32822d5518b0529dc0465.bin",
-      "bytes": 187496,
-      "sha256": "5b31001c1177b38ec608bb0309e284f8b50f4d75a9e32822d5518b0529dc0465",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/2ba6f8ac50c2f7a9216ac7c03cd92918611f993c99d674fa02b5d00ad705a6bf.bin",
-      "bytes": 192838,
-      "sha256": "2ba6f8ac50c2f7a9216ac7c03cd92918611f993c99d674fa02b5d00ad705a6bf",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/eb7d4226d5b7a43156ea93dd8f946fa50314250e7dc514abc6f0ff67ff4153aa.bin",
-      "bytes": 199507,
-      "sha256": "eb7d4226d5b7a43156ea93dd8f946fa50314250e7dc514abc6f0ff67ff4153aa",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/47e229133a174d7ebe0764b8cc620dcfd6b3a976e5eb05d234a63be510428a05.bin",
-      "bytes": 183370,
-      "sha256": "47e229133a174d7ebe0764b8cc620dcfd6b3a976e5eb05d234a63be510428a05",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/3b64ff7ce66f615a2587f2df6b07ebbd5914b49fd2fb14be831500c0bebb576c.bin",
-      "bytes": 176006,
-      "sha256": "3b64ff7ce66f615a2587f2df6b07ebbd5914b49fd2fb14be831500c0bebb576c",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/817a15f5dae8c20b03f3ba855a82a6245d7350452e920c5edccee2875cf2700b.bin",
-      "bytes": 181532,
-      "sha256": "817a15f5dae8c20b03f3ba855a82a6245d7350452e920c5edccee2875cf2700b",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/760ff359aba895de2d57681bccdfdf8a0112943e536184316cd117ba7e17280b.bin",
-      "bytes": 186283,
-      "sha256": "760ff359aba895de2d57681bccdfdf8a0112943e536184316cd117ba7e17280b",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/61e407eb3e2408e171106740f78f82d006c2eb4dd6e389c7670a69d12adbefe2.bin",
-      "bytes": 196645,
-      "sha256": "61e407eb3e2408e171106740f78f82d006c2eb4dd6e389c7670a69d12adbefe2",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/219a667c338c06937411b0b8d7fa572a6fd5ed0b51f70265204186279212eb1a.bin",
-      "bytes": 194823,
-      "sha256": "219a667c338c06937411b0b8d7fa572a6fd5ed0b51f70265204186279212eb1a",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/2f800012e41d68935a2b76a511e9b1c5f69247faf0902315b3cc96c75caaec24.bin",
-      "bytes": 197423,
-      "sha256": "2f800012e41d68935a2b76a511e9b1c5f69247faf0902315b3cc96c75caaec24",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/d51e7ea6c9b665246207f2e88a7b258f5f6c5cbdf54ea45ad2be4b8c6ca6c2a9.bin",
-      "bytes": 197800,
-      "sha256": "d51e7ea6c9b665246207f2e88a7b258f5f6c5cbdf54ea45ad2be4b8c6ca6c2a9",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/cd8cf3767e3f1002b25a7f3b898e66df05d4c74029f94b7eeeb0d4360aacc604.bin",
-      "bytes": 185608,
-      "sha256": "cd8cf3767e3f1002b25a7f3b898e66df05d4c74029f94b7eeeb0d4360aacc604",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/7e291c6467151026477b4d08b76cb48357265adaea3d123bff8e0f3de170daf4.bin",
-      "bytes": 221391,
-      "sha256": "7e291c6467151026477b4d08b76cb48357265adaea3d123bff8e0f3de170daf4",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/1745343ffa3377347ee4813d317738e60e675222143f4bcaef0bd3c1e9d876d1.bin",
-      "bytes": 186681,
-      "sha256": "1745343ffa3377347ee4813d317738e60e675222143f4bcaef0bd3c1e9d876d1",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/9bb4466acc35989f9cf8349b6e1a66dc380f51624c79e6c112948388e317e102.bin",
-      "bytes": 188542,
-      "sha256": "9bb4466acc35989f9cf8349b6e1a66dc380f51624c79e6c112948388e317e102",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/303dfdaf56cff0c29e2fd142847ff0f86dcc77112bc240285d9368a34ec6b7e2.bin",
-      "bytes": 185543,
-      "sha256": "303dfdaf56cff0c29e2fd142847ff0f86dcc77112bc240285d9368a34ec6b7e2",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/8c2a3151b4997de4086edee9b8d37f390dc764988945892ccbe8781a6fe528ff.bin",
-      "bytes": 192477,
-      "sha256": "8c2a3151b4997de4086edee9b8d37f390dc764988945892ccbe8781a6fe528ff",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/b0e51dee01a0f9b9aee43fadf7ac3001fbaa2a629b196942b80ff74786f0df04.bin",
-      "bytes": 197229,
-      "sha256": "b0e51dee01a0f9b9aee43fadf7ac3001fbaa2a629b196942b80ff74786f0df04",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/329407247ea3cadba595bbe7bace825ada6a00d52ce59d9853c597fef047d07e.bin",
-      "bytes": 175728,
-      "sha256": "329407247ea3cadba595bbe7bace825ada6a00d52ce59d9853c597fef047d07e",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/78a336f8ffcb5752ee4770a590ad2020a1011094ff84e3c062e38097bf0d3168.bin",
-      "bytes": 182873,
-      "sha256": "78a336f8ffcb5752ee4770a590ad2020a1011094ff84e3c062e38097bf0d3168",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/3a26daecd6eb223d2253375dc849499e834cbed7041126f1fac2aa01077b3154.bin",
-      "bytes": 194932,
-      "sha256": "3a26daecd6eb223d2253375dc849499e834cbed7041126f1fac2aa01077b3154",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/737a0367f0d0e93ffad2413e34b6492ba2a9d48c4a59ee202f8848e2f48a5c3c.bin",
-      "bytes": 179507,
-      "sha256": "737a0367f0d0e93ffad2413e34b6492ba2a9d48c4a59ee202f8848e2f48a5c3c",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/c6fffb2041770e455ab75ee3e89f58ab3398fea0e2a39aa9a93ed9a8784dbb5b.bin",
-      "bytes": 199694,
-      "sha256": "c6fffb2041770e455ab75ee3e89f58ab3398fea0e2a39aa9a93ed9a8784dbb5b",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/9c36b67f2f73fde2afaee42cf3bc44c9a877260e3ba52c6ee831dbceb0182f95.bin",
-      "bytes": 184341,
-      "sha256": "9c36b67f2f73fde2afaee42cf3bc44c9a877260e3ba52c6ee831dbceb0182f95",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/3afba5797b171bc8e992b4d70b16b5b33ab3c93ee9d06fc1859b02c37c3a350d.bin",
-      "bytes": 206670,
-      "sha256": "3afba5797b171bc8e992b4d70b16b5b33ab3c93ee9d06fc1859b02c37c3a350d",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/17ec23461ee2fc0eb8a899cd4754604c12b880dfc1442429418438982873c2c6.bin",
-      "bytes": 207459,
-      "sha256": "17ec23461ee2fc0eb8a899cd4754604c12b880dfc1442429418438982873c2c6",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/06f8e2a7f82eb3c16d739e2efb46d59512900eb9dcd0f5371a32b6f076c654ad.bin",
-      "bytes": 199413,
-      "sha256": "06f8e2a7f82eb3c16d739e2efb46d59512900eb9dcd0f5371a32b6f076c654ad",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/9dcec3a971f4fd7bbdc68f72e686f1c80f329e5810f7e1dce84cfda879d386ad.bin",
-      "bytes": 202370,
-      "sha256": "9dcec3a971f4fd7bbdc68f72e686f1c80f329e5810f7e1dce84cfda879d386ad",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/094e683db1001e315a76af41d56f97a21e8bbd5a880b25c598eebddf17c2cd28.bin",
-      "bytes": 187202,
-      "sha256": "094e683db1001e315a76af41d56f97a21e8bbd5a880b25c598eebddf17c2cd28",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/18ee247c8043bb6fad940e118d2cac538709dfaf750274025896683e2046ba3d.bin",
-      "bytes": 177536,
-      "sha256": "18ee247c8043bb6fad940e118d2cac538709dfaf750274025896683e2046ba3d",
-      "raw_bytes": 1048576,
-      "gzip": true
-    },
-    {
-      "path": "mobile/core/2b9df948f1d2c881f2a60c4701c992efde165e529fac32160e46b3742ab3b69f.bin",
-      "bytes": 65475,
-      "sha256": "2b9df948f1d2c881f2a60c4701c992efde165e529fac32160e46b3742ab3b69f",
-      "raw_bytes": 272678,
+      "path": "mobile/core/2b18e2f3ab7b7e134e27387eec8bc7a43adccaf1fe44de96d2fe9d9ec7eb104e.bin",
+      "bytes": 65679,
+      "sha256": "2b18e2f3ab7b7e134e27387eec8bc7a43adccaf1fe44de96d2fe9d9ec7eb104e",
+      "raw_bytes": 274201,
       "gzip": true
     }
   ],
@@ -383,17 +110,10 @@
       "sha256": "85a5eab6e1fa74058cab2c8b5150e393dad62f863aac034bcea37a7a1568f40a",
       "parts": [
         {
-          "path": "mobile/mods/04060abce1948d80444963e877fb50c43dedf0b955cf391882a0348d813e8312.bin",
-          "bytes": 524288,
-          "sha256": "04060abce1948d80444963e877fb50c43dedf0b955cf391882a0348d813e8312",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/dc9c4314201757dc920ba0813ca46a3e2f32b478acfb5ea2340f1cd94027717e.bin",
-          "bytes": 399235,
-          "sha256": "dc9c4314201757dc920ba0813ca46a3e2f32b478acfb5ea2340f1cd94027717e",
-          "raw_bytes": 399235,
+          "path": "mobile/mods/85a5eab6e1fa74058cab2c8b5150e393dad62f863aac034bcea37a7a1568f40a.bin",
+          "bytes": 923523,
+          "sha256": "85a5eab6e1fa74058cab2c8b5150e393dad62f863aac034bcea37a7a1568f40a",
+          "raw_bytes": 923523,
           "gzip": false
         }
       ]
@@ -432,17 +152,10 @@
       "sha256": "26c746e709300d82783703d2a3b1b7166f8c17947c1c56c3491d77df4ab87d96",
       "parts": [
         {
-          "path": "mobile/mods/71758da2b1817f95f4f7666410a0e876ddd5cba49c121dd0e6f6a7c5e74fd176.bin",
-          "bytes": 524288,
-          "sha256": "71758da2b1817f95f4f7666410a0e876ddd5cba49c121dd0e6f6a7c5e74fd176",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/4be93528ec343bb1ebbb15a74ef37c9e7a09641d5fa5074e9802f9c350ef7cad.bin",
-          "bytes": 524288,
-          "sha256": "4be93528ec343bb1ebbb15a74ef37c9e7a09641d5fa5074e9802f9c350ef7cad",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/3bde3afcfb9d090915adad4f5cc5138f6c89b9a30ec66c7e4cd84cbb71d8e28d.bin",
+          "bytes": 1048576,
+          "sha256": "3bde3afcfb9d090915adad4f5cc5138f6c89b9a30ec66c7e4cd84cbb71d8e28d",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
@@ -726,185 +439,94 @@
       "sha256": "af3950ec751442dbf6af5dac42ae3cee0fea67fc1944a836ffc8c3a8e5407be3",
       "parts": [
         {
-          "path": "mobile/mods/592115af5355dc9eaca301d68b1f713e437f4c3f009a2b9313cccf0e864766f3.bin",
-          "bytes": 524288,
-          "sha256": "592115af5355dc9eaca301d68b1f713e437f4c3f009a2b9313cccf0e864766f3",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/0b2accd627457b6f2acb7d6e46ff51ba89271aaa1daa33218394828ac620b4d4.bin",
+          "bytes": 1048576,
+          "sha256": "0b2accd627457b6f2acb7d6e46ff51ba89271aaa1daa33218394828ac620b4d4",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/9b65161421d1fe1af8c21bcb07e1d3c75ab951dfa6de9aeb7b5a0d9898ac3004.bin",
-          "bytes": 524288,
-          "sha256": "9b65161421d1fe1af8c21bcb07e1d3c75ab951dfa6de9aeb7b5a0d9898ac3004",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/c76dd2f45b98b8b1436dd2f41b058ae9613103f92d73e0d59210710c6836a2fa.bin",
+          "bytes": 1048576,
+          "sha256": "c76dd2f45b98b8b1436dd2f41b058ae9613103f92d73e0d59210710c6836a2fa",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/9af0fa39ea0ec690fbbfcd2cdeafb208006c1d5d959bb307c1a46035f5ad106a.bin",
-          "bytes": 524288,
-          "sha256": "9af0fa39ea0ec690fbbfcd2cdeafb208006c1d5d959bb307c1a46035f5ad106a",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/46d795dc64faff96682a501373a054a0292c37e5693e4cb1da21c8943fbb8bc2.bin",
+          "bytes": 1048576,
+          "sha256": "46d795dc64faff96682a501373a054a0292c37e5693e4cb1da21c8943fbb8bc2",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/7ee3be2528fa309637c1f5607e4530f7a099726a8fab9eaa7a5b054e8844ab8d.bin",
-          "bytes": 524288,
-          "sha256": "7ee3be2528fa309637c1f5607e4530f7a099726a8fab9eaa7a5b054e8844ab8d",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/2010e83d9d08685ee167513322841b3a9280d84ff69b65fd3b6c57cece2af040.bin",
+          "bytes": 1048576,
+          "sha256": "2010e83d9d08685ee167513322841b3a9280d84ff69b65fd3b6c57cece2af040",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/b38215eae2d022567c93e1664628968e7c5d6a6a701e2e382a5cc9bed704b120.bin",
-          "bytes": 524288,
-          "sha256": "b38215eae2d022567c93e1664628968e7c5d6a6a701e2e382a5cc9bed704b120",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/4850089a98416f78f16339c25045bab5090e5a5c3eb78cc56835e0624a7331e6.bin",
+          "bytes": 1048576,
+          "sha256": "4850089a98416f78f16339c25045bab5090e5a5c3eb78cc56835e0624a7331e6",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/8e227ca6642e9489d5872565b8ffeafeaaae53588b84d223bd813efb060a5c1e.bin",
-          "bytes": 524288,
-          "sha256": "8e227ca6642e9489d5872565b8ffeafeaaae53588b84d223bd813efb060a5c1e",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/0c9b63ed0f1e74821a4c1643ea64d755fb3b0c57125648c3db36934fcf09c8a7.bin",
+          "bytes": 1048576,
+          "sha256": "0c9b63ed0f1e74821a4c1643ea64d755fb3b0c57125648c3db36934fcf09c8a7",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/3cf0a07c1dacba866b359106a505aa61c981084cc5d86b594d5c8f983e49ec40.bin",
-          "bytes": 524288,
-          "sha256": "3cf0a07c1dacba866b359106a505aa61c981084cc5d86b594d5c8f983e49ec40",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/339dd4947b7b0c0b0d7f157aaa1f6318ca82beb05e7015bbe17276003ad6e077.bin",
+          "bytes": 1048576,
+          "sha256": "339dd4947b7b0c0b0d7f157aaa1f6318ca82beb05e7015bbe17276003ad6e077",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/d33ddbc3af1990a3876e6277be15f0b27fc7578a9a2e804fe4ae21e7d377a967.bin",
-          "bytes": 524288,
-          "sha256": "d33ddbc3af1990a3876e6277be15f0b27fc7578a9a2e804fe4ae21e7d377a967",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/d3d40a24d84c42bbd57e6dfd3ce286de7274808eff7e91912348723f6477feaf.bin",
+          "bytes": 1048576,
+          "sha256": "d3d40a24d84c42bbd57e6dfd3ce286de7274808eff7e91912348723f6477feaf",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/fa0c36444df1d48dcb4aac6e0f496a177641f49904576f30ef0d36c3623ae974.bin",
-          "bytes": 524288,
-          "sha256": "fa0c36444df1d48dcb4aac6e0f496a177641f49904576f30ef0d36c3623ae974",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/95a19be8ace7f759203b2f4d12597fd43707a333fcdfd93ee5fcc74e60f2317e.bin",
+          "bytes": 1048576,
+          "sha256": "95a19be8ace7f759203b2f4d12597fd43707a333fcdfd93ee5fcc74e60f2317e",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/c2263c5b381ded7e21ffdf59ab322b13e27f02e7e8e3171a77c5f9a6d5579a3c.bin",
-          "bytes": 524288,
-          "sha256": "c2263c5b381ded7e21ffdf59ab322b13e27f02e7e8e3171a77c5f9a6d5579a3c",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/853d33da17ef4fd942c1d6c34bc8913bbac55b96bc18f2ccd529f13a244cc3b5.bin",
+          "bytes": 1048576,
+          "sha256": "853d33da17ef4fd942c1d6c34bc8913bbac55b96bc18f2ccd529f13a244cc3b5",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/f0730babd3ae62d99f2a667feba3beb8f609cf9e9630a1a8b441c9efe2984242.bin",
-          "bytes": 524288,
-          "sha256": "f0730babd3ae62d99f2a667feba3beb8f609cf9e9630a1a8b441c9efe2984242",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/29881e3c85b03a1cdc6914198644965ad9fe2133f504a05f58d2cdf0f7fbb548.bin",
+          "bytes": 1048576,
+          "sha256": "29881e3c85b03a1cdc6914198644965ad9fe2133f504a05f58d2cdf0f7fbb548",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/edb3a712a9af583acee3429e79c2bddb9bc535c303b03afa9fa76bc9bace8640.bin",
-          "bytes": 524288,
-          "sha256": "edb3a712a9af583acee3429e79c2bddb9bc535c303b03afa9fa76bc9bace8640",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/809203bbda538f3c92f88eea3376c8a30f8f4855a46318facc56822c08288d2b.bin",
+          "bytes": 1048576,
+          "sha256": "809203bbda538f3c92f88eea3376c8a30f8f4855a46318facc56822c08288d2b",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/991f3f4567b330a0846b6d0dab75e21ec362528e3b9323f98d6cdbf2ff7282f8.bin",
-          "bytes": 524288,
-          "sha256": "991f3f4567b330a0846b6d0dab75e21ec362528e3b9323f98d6cdbf2ff7282f8",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/23bf970a8c3d9a63b3c5832dee39a85212fadacd9199fb6305e3d63f3cae85bd.bin",
-          "bytes": 524288,
-          "sha256": "23bf970a8c3d9a63b3c5832dee39a85212fadacd9199fb6305e3d63f3cae85bd",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/d6db7b63e2e3c4bebeba21721f7b352e2f5c2c838f16f94a40a74c57b6ad12e6.bin",
-          "bytes": 524288,
-          "sha256": "d6db7b63e2e3c4bebeba21721f7b352e2f5c2c838f16f94a40a74c57b6ad12e6",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/a42673407185c0cab9ccb85fb4d84aa228201ce9d139f51d9006ef72e3a6278e.bin",
-          "bytes": 524288,
-          "sha256": "a42673407185c0cab9ccb85fb4d84aa228201ce9d139f51d9006ef72e3a6278e",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/c0e980f778cb4749f559b4114e52f18e3a97d4c7059b10541487a811319091a1.bin",
-          "bytes": 524288,
-          "sha256": "c0e980f778cb4749f559b4114e52f18e3a97d4c7059b10541487a811319091a1",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/6aaf8d36c707e5ed21d25e6c37ae987296eca5f8633ce7a3a4f713fc7fb2b6aa.bin",
-          "bytes": 524288,
-          "sha256": "6aaf8d36c707e5ed21d25e6c37ae987296eca5f8633ce7a3a4f713fc7fb2b6aa",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/e2906cb194bb221fac909b0118bc05ed7493ca04d765c90546ce5dbd3273914c.bin",
-          "bytes": 524288,
-          "sha256": "e2906cb194bb221fac909b0118bc05ed7493ca04d765c90546ce5dbd3273914c",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/09a789590aad13dc15e2de9ef283dc6a3a6d680b3a8bdecd66baf40daf579813.bin",
-          "bytes": 524288,
-          "sha256": "09a789590aad13dc15e2de9ef283dc6a3a6d680b3a8bdecd66baf40daf579813",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/888b511ed8f32a43ac33900969a1502e29604dc2c577459029a171411dc272e9.bin",
-          "bytes": 524288,
-          "sha256": "888b511ed8f32a43ac33900969a1502e29604dc2c577459029a171411dc272e9",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/f12661425f52eb8ba2e9ea27458c925f357e2978d04a3b763c947d5a35d79982.bin",
-          "bytes": 524288,
-          "sha256": "f12661425f52eb8ba2e9ea27458c925f357e2978d04a3b763c947d5a35d79982",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/47249feb138b435b6097709f8c743ea5445f5d3122683d92721b3ccff8ece3c0.bin",
-          "bytes": 524288,
-          "sha256": "47249feb138b435b6097709f8c743ea5445f5d3122683d92721b3ccff8ece3c0",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/0e126c472de8b5f37df4bdba5cb7b195b599e263da5d4dab70c0f3e8c3e2bc67.bin",
-          "bytes": 524288,
-          "sha256": "0e126c472de8b5f37df4bdba5cb7b195b599e263da5d4dab70c0f3e8c3e2bc67",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/1ccd3c83db653a2758a28ed8489613d3eaa35035efcd533b1fe3ef88f1818a2c.bin",
-          "bytes": 524288,
-          "sha256": "1ccd3c83db653a2758a28ed8489613d3eaa35035efcd533b1fe3ef88f1818a2c",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/d144e6ba348ac4466f553349e90db107132064d8d1566fb4518c0790ae1f45d6.bin",
-          "bytes": 524288,
-          "sha256": "d144e6ba348ac4466f553349e90db107132064d8d1566fb4518c0790ae1f45d6",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/f31b14a3c232fbb75b216ed8cfc5df4c227bc7ee154cb5031dd0285870b8f24b.bin",
+          "bytes": 1048576,
+          "sha256": "f31b14a3c232fbb75b216ed8cfc5df4c227bc7ee154cb5031dd0285870b8f24b",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
@@ -932,28 +554,21 @@
     },
     {
       "name": "DoLWebArtPack",
-      "bytes": 1571508,
-      "sha256": "5276fec9e29d5dc75986c4dd4cb62e892620fd88ead53197853179b3c9c8c2cf",
+      "bytes": 1571963,
+      "sha256": "63d9018ee88f0f87f33b8232bd62fd92c9221bb115965598e7570d798abc1d9b",
       "parts": [
         {
-          "path": "mobile/mods/d52ff646f30edf5e4f8f129d21e4224c9a4e3008faecbb478f8b49e75a0f4a92.bin",
-          "bytes": 524288,
-          "sha256": "d52ff646f30edf5e4f8f129d21e4224c9a4e3008faecbb478f8b49e75a0f4a92",
-          "raw_bytes": 524288,
+          "path": "mobile/mods/e1fc46401a111e0288b69bfa6e16ee2edf49ae7bcde428763dabdbcbe37ce525.bin",
+          "bytes": 1048576,
+          "sha256": "e1fc46401a111e0288b69bfa6e16ee2edf49ae7bcde428763dabdbcbe37ce525",
+          "raw_bytes": 1048576,
           "gzip": false
         },
         {
-          "path": "mobile/mods/589dbc126a9036d21418614ad53f6b75b8b0bc00c02f548c41fa6cfadd414a17.bin",
-          "bytes": 524288,
-          "sha256": "589dbc126a9036d21418614ad53f6b75b8b0bc00c02f548c41fa6cfadd414a17",
-          "raw_bytes": 524288,
-          "gzip": false
-        },
-        {
-          "path": "mobile/mods/6bddf92d8166776b41f41d33a4f7ff8a8dd4532fa2807504779df010294c93ae.bin",
-          "bytes": 522932,
-          "sha256": "6bddf92d8166776b41f41d33a4f7ff8a8dd4532fa2807504779df010294c93ae",
-          "raw_bytes": 522932,
+          "path": "mobile/mods/652233905427274ac8284bdcc214532b817cba143367865c1ec4bc21b907bc62.bin",
+          "bytes": 523387,
+          "sha256": "652233905427274ac8284bdcc214532b817cba143367865c1ec4bc21b907bc62",
+          "raw_bytes": 523387,
           "gzip": false
         }
       ]
@@ -993,5 +608,5 @@
   "static_images": 32779,
   "unique_images": 23275,
   "static_image_bytes": 88708689,
-  "max_resource_bytes": 524288
+  "max_resource_bytes": 1048576
 }
