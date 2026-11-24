@@ -7,7 +7,8 @@ try {
  const url = 'http://127.0.0.1:8765';
  await context.route('**/*', route => {
   const request=new URL(route.request().url());
-  if (request.origin === url || request.protocol === 'data:' || request.protocol === 'blob:') return route.continue();
+  if (request.protocol === 'data:' || request.protocol === 'blob:') return route.continue();
+  if (request.origin === url && route.request().isNavigationRequest()) return route.continue();
   return route.abort();
  });
  await context.addInitScript(() => localStorage.setItem('verifiedAge','true'));
@@ -30,7 +31,7 @@ try {
  assert.equal(result.report?.mods,26);
  assert.equal(result.body,'dol-original:img/body/mannequin/base-body.png');
  assert.equal(result.embedded,true);
- console.log('PASS: WebKit started the offline ZIP over local HTTP with external requests blocked, and read the matching original body, both dress layers, and the town image.');
+ console.log('PASS: WebKit started the standalone HTML with all subsequent HTTP requests blocked, and read the matching original body, both dress layers, and the town image.');
 } finally {
  await browser.close();
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package the tested v9 mobile renderer and assets for a local HTTP server."""
+"""Package the tested v9 mobile renderer and assets as one self-contained HTML file."""
 from pathlib import Path
 import base64
 import hashlib
@@ -108,19 +108,14 @@ window.dolPrepareArtPack=async()=>{
  status.style='position:fixed;inset:0;z-index:2147483646;background:#111;color:white;padding:24px;font:18px system-ui';
  document.body.append(status);
  try {
-  for(let i=0;i<26;i++){
-   status.textContent='正在读取本机模组 '+(i+1)+' / 26……';
-   const path='mods/'+String(i).padStart(2,'0')+'.zip';
-   const response=await fetch(path);
-   if(!response.ok)throw Error('模组读取失败：'+path+' HTTP '+response.status);
-   const blob=await response.blob();
-   const data=await new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>resolve(reader.result.split(',')[1]);
-    reader.onerror=()=>reject(reader.error);
-    reader.readAsDataURL(blob);
-   });
-   window.modDataValueZipList.push(data);
+  const grouped=Array.from({length:26},()=>[]);
+  for(const chunk of document.querySelectorAll('script[data-offline-mod]')){
+   grouped[Number(chunk.dataset.offlineMod)].push(chunk.textContent);
+   chunk.remove();
+  }
+  for(const chunks of grouped){
+   if(!chunks.length)throw Error('离线模组数据不完整');
+   window.modDataValueZipList.push(chunks.join(''));
   }
   status.textContent='正在初始化游戏……';
   const timer=setInterval(()=>{
@@ -134,32 +129,37 @@ window.dolPrepareArtPack=async()=>{
 </script>"""
 source = source.replace(original_prepare,prepare,1)
 assert story == re.search(r'<tw-storydata[^>]*>',source)[0]
-assert "const path='mods/'" in source
+assert "data-offline-mod" in source
+# Separate opaque data from executable JavaScript and bound each parser token.
+blocks=[]
+chunk_bytes=768*1024
+for i,archive in enumerate(archives):
+    for offset in range(0,len(archive),chunk_bytes):
+        data=base64.b64encode(archive[offset:offset+chunk_bytes]).decode()
+        blocks.append(f'<script type="application/octet-stream" data-offline-mod="{i}">{data}</script>')
+assert source.count('</tw-storydata>')==1
+source=source.replace('</tw-storydata>','</tw-storydata>'+''.join(blocks),1)
 guide = '''DoL 0.5.12.13-chs-1.0.1a · 离线修复版 v9
 
 本包带有 BESC/UCB 美化、v9 服装与人物身形匹配、城镇底图和衣柜容量修复。
-游戏与模组已打包。启动时仍需要在设备上初始化内置模组。
+游戏及全部模组内置在「开始游戏.html」里。打开后请等待初始化完成。
 
 iPhone：先解压，TinyServer 选择解压后包含「开始游戏.html」的文件夹。
 启动服务，点 Open Browser。如果看到文件列表，点「开始游戏.html」。
-Windows 或 Mac：解压后从本机 HTTP 服务打开同名文件。请保留 mods 文件夹。
+Windows 或 Mac：解压后用支持 JavaScript 的浏览器打开「开始游戏.html」。
 
 迁移网页或旧本地版进度：先在旧版「存档 → 导出/载入 → 导出存档」，
 再在此版选择「从文件载入」。同一地址、同一浏览器通常可直接读取原来的本地存档。
 '''
-index = '''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>DoL 离线修复版</title></head><body><a href="开始游戏.html">开始游戏</a><script>location.replace('开始游戏.html');</script></body></html>'''
 destination.parent.mkdir(parents=True,exist_ok=True)
 with zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as result:
-    result.writestr('index.html',index)
     result.writestr('开始游戏.html',source)
     result.writestr('使用说明.txt',guide)
-    for i,archive in enumerate(archives):
-        result.writestr(f'mods/{i:02}.zip',archive,compress_type=zipfile.ZIP_STORED)
     for name in ('LICENSE','CREDITS.md'):
         result.write(root/name,name)
 with zipfile.ZipFile(destination) as result:
     assert result.testzip() is None
-    assert len(result.namelist()) == 31
+    assert len(result.namelist()) == 4
 with zipfile.ZipFile(io.BytesIO(archives[-1])) as result:
     assert result.testzip() is None
     for path, alias in variants.items():

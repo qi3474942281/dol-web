@@ -1,11 +1,11 @@
-name: Validate and publish mobile v9 offline ZIP
+name: Validate and publish single-HTML mobile v9
 on:
   push:
-    branches: ['release/offline-v9']
+    branches: ['release/offline-v9-single']
 permissions:
   contents: read
 concurrency:
-  group: offline-v9-release
+  group: offline-v9-single-release
   cancel-in-progress: false
 jobs:
   verify:
@@ -20,11 +20,11 @@ jobs:
       - name: Build and check the offline archive
         run: |
           mkdir -p release-offline /tmp/dol-offline
-          python3 tools/build_offline_v9.py . release-offline/DoL-0.5.12.13-BESC-UCB-Offline-v9.zip
+          python3 tools/build_offline_v9.py . release-offline/DoL-0.5.12.13-BESC-UCB-Offline-Single-HTML-v9.zip
           cd release-offline
           python3 ../tools/verify_offline_v9.py ..
-          python3 -m zipfile -e DoL-0.5.12.13-BESC-UCB-Offline-v9.zip /tmp/dol-offline
-          sha256sum DoL-0.5.12.13-BESC-UCB-Offline-v9.zip > SHA256SUMS.txt
+          python3 -m zipfile -e DoL-0.5.12.13-BESC-UCB-Offline-Single-HTML-v9.zip /tmp/dol-offline
+          sha256sum DoL-0.5.12.13-BESC-UCB-Offline-Single-HTML-v9.zip > SHA256SUMS.txt
       - run: npm install --no-save playwright@1.56.1
       - name: Test WebKit startup without internet access
         run: |
@@ -32,7 +32,7 @@ jobs:
           node tools/verify_offline_browser.mjs
       - uses: actions/upload-artifact@v4
         with:
-          name: offline-v9-verified
+          name: offline-v9-single-verified
           path: release-offline/
           compression-level: 0
   publish:
@@ -43,11 +43,11 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: offline-v9-verified
+          name: offline-v9-single-verified
       - name: Publish direct download
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           sha256sum -c SHA256SUMS.txt
-          gh release create dol-web-offline-v9 DoL-0.5.12.13-BESC-UCB-Offline-v9.zip SHA256SUMS.txt --target 13d8ab1d17137314e896f1412676b112025f6945 --title 'DoL 0.5.12.13 BESC/UCB 离线修复版 v9' --notes '包含 v9 服装与人物身形匹配、立绘加载和城镇底图修复。iPhone 解压后使用 TinyServer 打开「开始游戏.html」。' --latest=false
+          gh release create dol-web-offline-v9-single DoL-0.5.12.13-BESC-UCB-Offline-Single-HTML-v9.zip SHA256SUMS.txt --target 13d8ab1d17137314e896f1412676b112025f6945 --title 'DoL 0.5.12.13 BESC/UCB 单 HTML 离线修复版 v9' --notes '包含 v9 服装与人物身形匹配、立绘加载和城镇底图修复。全部模组内置于「开始游戏.html」。iPhone 解压后使用 TinyServer 打开它。' --latest=false
