@@ -8,15 +8,20 @@ await context.addInitScript(()=>{
  localStorage.setItem('verifiedAge','true');
  if(location.pathname.endsWith('/mobile.html')){
   if('serviceWorker' in navigator)navigator.serviceWorker.register=()=>Promise.reject(Error('Test: service workers unavailable'));
-  if(window.caches)caches.open=()=>Promise.reject(Error('Test: CacheStorage unavailable'));
+
  }
 });
 const page=await context.newPage();const base='http://127.0.0.1:8765/';
-let phase='legacy',reset=false,rateLimited=false,limitedURL,limitedAt,retriedAt,chunkRequests=0;const forbidden=[],errors=[],images=[];
+let phase='legacy',warmRequests=0,reset=false,rateLimited=false,limitedURL,limitedAt,retriedAt,chunkRequests=0;const forbidden=[],errors=[],images=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')console.log('browser-error:',m.text().slice(0,500));});
 await context.route('**/*',async route=>{
  const u=new URL(route.request().url());
+ if(phase==='warm'&&/\/mobile\/(core|mods|manifest)/.test(u.pathname)){
+  warmRequests++;
+  await route.abort('connectionreset');
+  return;
+ }
  if(phase==='mobile'){
   if(['/game.html','/online.html','/mods/DoLWebArtPack.mod.zip'].includes(u.pathname)){forbidden.push(u.pathname);await route.abort('connectionreset');return;}
   if(/\/mobile\/(core|mods)\/.+\.bin$/.test(u.pathname)){
@@ -45,7 +50,9 @@ try{
  const saveId=await page.evaluate(()=>window.__oldSaveId);
  await page.evaluate(()=>{localStorage.setItem('mobile-preserve-local','keep');sessionStorage.setItem('mobile-preserve-session','keep');});
  phase='mobile';errors.length=0;
- await page.goto(base+'mobile.html?mobile=6',{waitUntil:'domcontentloaded',timeout:30000});await ready();
+ const coldStart=Date.now();
+ await page.goto(base+'mobile.html?mobile=8',{waitUntil:'domcontentloaded',timeout:30000});await ready();
+ const coldMs=Date.now()-coldStart;
  assert.equal(await page.evaluate(()=>window.modSC2DataManager.getLanguageManager().mainLanguage),'zh');
  assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.delivery),'static-on-demand');
  assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.images),32779);
@@ -80,6 +87,32 @@ try{
   }return result;
  },manifest.artwork.samples);
  for(const [name,item] of Object.entries(manifest.artwork.samples)){assert.equal(samples[name].hash,item.sha256);assert.ok(samples[name].width>0&&samples[name].height>0);}
+ const dressLayers=['img/clothes/upper/tie front dress/full.png','img/clothes/lower/tie front dress/full.png'];
+ const dressTiming=await page.evaluate(async paths=>{
+  const start=performance.now();
+  const layer={scale:true,model:{height:256}};
+  const rendered=await Promise.all(paths.map(path=>new Promise((resolve,reject)=>{
+   Renderer.DefaultImageLoader.loadImage(path,layer,(_,__,image)=>{
+    const pixels=image.getContext('2d').getImageData(0,0,image.width,image.height).data;
+    let top=image.height,bottom=0;
+    for(let i=3;i<pixels.length;i+=4)if(pixels[i]){
+     const y=Math.floor((i-3)/4/image.width);
+     top=Math.min(top,y);bottom=Math.max(bottom,y);
+    }
+    resolve({width:image.width,height:image.height,top,bottom});
+   },(_,__,error)=>reject(error));
+  })));
+  return {elapsedMs:performance.now()-start,rendered};
+ },dressLayers);
+ assert.deepEqual(dressTiming.rendered,[
+  {width:512,height:256,top:94,bottom:139},
+  {width:512,height:256,top:112,bottom:175},
+ ],'shop dress layers retain both frames and align in the 256-pixel model');
+ const locationLights=await page.evaluate(async()=>{
+  const results=await Promise.all(['emissive-evening.png','red.png'].map(file=>ImageCache.getOrCreate('img/misc/locations/office/'+file)));
+  return results.map(image=>[image.width,image.height]);
+ });
+ assert.ok(locationLights.every(([width,height])=>width>1&&height>1));
  await script("window.__profile={upper:clone(V.worn.upper),hair:V.hairtype};window.__hair=setup.hairstyles.sides.map(h=>h.variable).filter(h=>typeof h==='string'&&h!==V.hairtype)[0];V.hairtype=window.__hair;Engine.play('Bedroom');");
  await page.waitForTimeout(700);
  assert.deepEqual(await page.locator('#passages .error').allTextContents(),[]);
@@ -129,7 +162,27 @@ try{
  console.log('PASS wardrobe controls: real Other tab, +/-1 and +/-10, furniture recalculation, save/load and occupied-slot floor without clothing deletion.');
  await fs.mkdir('verification',{recursive:true});
  await page.screenshot({path:'verification/mobile-'+kind+'.png',fullPage:true});
- await fs.writeFile('verification/mobile-'+kind+'.json',JSON.stringify({browser:kind,saveId,samples,chunkRequests,artRequests:new Set(images).size,report:await page.evaluate(()=>window.DOLMobileLoadReport)},null,2));
+ const coldReport=await page.evaluate(()=>window.DOLMobileLoadReport);
+ // Close the page and reopen with all boot data requests denied.
+ phase='warm';
+ await page.close();
+ const warmPage=await context.newPage();
+ const warmStart=Date.now();
+ await warmPage.goto(base+'mobile.html?mobile=8',{waitUntil:'domcontentloaded'});
+ await warmPage.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:90000});
+ const warmMs=Date.now()-warmStart;
+ assert.equal(warmRequests,0);
+ assert.equal(await warmPage.evaluate(()=>DOLMobileLoadReport.cached),true);
+ const before=images.length;
+ phase='mobile';
+ const cachedArt=await warmPage.evaluate(async path=>{
+  const image=await modImgLoaderHooker.getImage(path);
+  return image?.startsWith('data:image/');
+ },dressLayers[0]);
+ assert.equal(cachedArt,true);
+ assert.equal(images.length,before,'a previously shown dress is available without a new image request');
+ await fs.writeFile('verification/mobile-'+kind+'.json',JSON.stringify({browser:kind,saveId,samples,chunkRequests,artRequests:new Set(images).size,coldMs,warmMs,dressTiming,report:coldReport},null,2));
+ console.log('PASS cached reopen',JSON.stringify({coldMs,warmMs,warmRequests,dressTiming}));
  console.log('PASS',kind,'real old local/IndexedDB saves preserved; Chinese + 32779 lazy art entries; interrupted chunk retried; no worker/cache dependency or monolithic HTML/ZIP download.');
 }catch(error){
  console.log('FAILURE PAGE',page.url());console.log(await page.evaluate(()=>({body:document.body?.innerText.slice(0,1800),check:window.DOLBootCheck,report:window.DOLMobileLoadReport,wardrobePatch:window.DOLWardrobeCapacity&&{keys:Object.keys(window.DOLWardrobeCapacity),error:window.DOLWardrobeCapacity.patchError}})).catch(()=>({})));
