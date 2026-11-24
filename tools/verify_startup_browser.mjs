@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 const kind=process.argv[2]||'chromium';
 const browser=await ({chromium,webkit}[kind]).launch(process.env.DOL_CONTAINER?{}:kind==='chromium'?{channel:'chrome'}:{});
 const context=await browser.newContext({...devices['iPhone 13']});
-const page=await context.newPage();
+const page=await context.newPage();let active=page;
+page.on('console',m=>{if(m.type()==='error')console.log('browser-error:',m.text().slice(0,800));});
 const base='http://127.0.0.1:8765/';
 try{
  await page.goto(base+'backup.html');
@@ -35,6 +36,7 @@ try{
  context.on('request',r=>{if(r.url().includes('upstream-release.json')||r.url().includes('/mods/DoLWebArtPack.mod.zip'))requests++;});
  await page.goto(base+'start.html?startup=5');
  await page.waitForURL(/game\.html\?build=dol-051213-chs101a-3/,{timeout:90000});
+ console.log('cache navigation:',await page.evaluate(async()=>({controller:navigator.serviceWorker.controller?.scriptURL,body:document.body.innerText.slice(0,1000),cached:!!await(await caches.open('dol-web-dol-051213-chs101a-3')).match(new URL('game.html?build=dol-051213-chs101a-3',location.href))})));
  await page.locator('#cached-fixture').waitFor();
  assert.equal(requests,0,'already cached game/art files must not be downloaded again');
  assert.equal(await page.evaluate(()=>localStorage.getItem('startup-save-sentinel')),'must-survive');
@@ -50,7 +52,8 @@ try{
   localStorage.setItem('online-save-sentinel','preserved');
   if('serviceWorker' in navigator)navigator.serviceWorker.register=()=>Promise.reject(Error('Test: worker registration unavailable'));
  });
- const fp=await fallback.newPage();
+ const fp=await fallback.newPage();active=fp;
+ fp.on('console',m=>{if(m.type()==='error')console.log('online-browser-error:',m.text().slice(0,800));});
  await fp.goto(base+'start.html?fallback-test=5');
  await fp.waitForURL(/online\.html\?build=dol-051213-chs101a-3/,{timeout:30000});
  await fp.waitForFunction(()=>window.SugarCube?.State?.passage||document.getElementById('dol-startup-error'),null,{timeout:240000});
@@ -62,4 +65,4 @@ try{
  assert.equal(await fp.evaluate(()=>localStorage.getItem('online-save-sentinel')),'preserved');
  await fallback.close();
  console.log('PASS '+kind+': new backup preserves IndexedDB saves; existing backup is not deserialized at startup; cached game/art reused; local/session saves intact; blocked worker registration boots real Chinese game with full artwork through online.html.');
-}finally{await browser.close();}
+}catch(error){console.log('failure page:',active.url());console.log(await active.evaluate(()=>({body:document.body?.innerText.slice(0,2000),check:window.DOLBootCheck,controller:navigator.serviceWorker?.controller?.scriptURL})).catch(()=>({})));throw error;}finally{await browser.close();}

@@ -24,7 +24,7 @@
    const registration=await timeout(pending,5000,'worker registration timeout');
    const deadline=Date.now()+5000;
    while(Date.now()<deadline){
-    if(compatible(navigator.serviceWorker.controller)||(registration.active?.state==='activated'&&compatible(registration.active)))return true;
+    if(compatible(navigator.serviceWorker.controller))return true;
     await new Promise(r=>setTimeout(r,100));
    }
   }catch{}
