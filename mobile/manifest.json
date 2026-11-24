@@ -918,14 +918,14 @@
     },
     {
       "name": "DoLWebCompatibility",
-      "bytes": 2953,
-      "sha256": "4e79689ec8f3cd1bb73557e017f1509a8c376b6926ce86a0c60c9031342ab2a0",
+      "bytes": 3198,
+      "sha256": "e8da9ae02390125e34351e728fd2d764e52b16ee9928fa3a99ce6673af7ea041",
       "parts": [
         {
-          "path": "mobile/mods/4e79689ec8f3cd1bb73557e017f1509a8c376b6926ce86a0c60c9031342ab2a0.bin",
-          "bytes": 2953,
-          "sha256": "4e79689ec8f3cd1bb73557e017f1509a8c376b6926ce86a0c60c9031342ab2a0",
-          "raw_bytes": 2953,
+          "path": "mobile/mods/e8da9ae02390125e34351e728fd2d764e52b16ee9928fa3a99ce6673af7ea041.bin",
+          "bytes": 3198,
+          "sha256": "e8da9ae02390125e34351e728fd2d764e52b16ee9928fa3a99ce6673af7ea041",
+          "raw_bytes": 3198,
           "gzip": false
         }
       ]
