@@ -8,6 +8,10 @@ page.on('console',m=>{if(m.type()==='error')console.log('browser-error:',m.text(
 const base='http://127.0.0.1:8765/';
 try{
  await page.goto(base+'backup.html');
+ // Seed an installed site's cache, after worker ownership is established.
+ // WebKit can discard cache entries created before its first registration.
+ await page.evaluate(async()=>{await navigator.serviceWorker.register('sw.js?build=dol-051213-chs101a-3&startup=startup-5');await navigator.serviceWorker.ready;});
+ await page.waitForFunction(()=>navigator.serviceWorker.controller,null,{timeout:15000});
  await page.evaluate(async()=>{
   localStorage.setItem('startup-save-sentinel','must-survive');
   sessionStorage.setItem('startup-session-sentinel','must-survive');
