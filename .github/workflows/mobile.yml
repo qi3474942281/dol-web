@@ -1,7 +1,7 @@
 name: Build and verify mobile resource delivery
 on:
   push:
-    branches: ['fix/mobile-assets']
+    branches: ['fix/mobile-assets', 'fix/wardrobe-capacity']
     paths-ignore: ['mobile/**', 'mobile.html', 'index.html', 'play.html', 'launch.html', 'start.html']
   workflow_dispatch:
 concurrency:
@@ -23,6 +23,8 @@ jobs:
       - run: python tools/build_mobile.py
       - id: commit
         name: Commit generated mobile resources
+        env:
+          MOBILE_FEATURE_BRANCH: ${{ github.ref_name }}
         run: |
           git add mobile.html mobile index.html play.html launch.html start.html
           if ! git diff --cached --quiet; then
@@ -30,7 +32,7 @@ jobs:
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git commit -m 'Generate chunked mobile game and lazy BESC UCB art' > /tmp/mobile-commit.log
             tail -n 1 /tmp/mobile-commit.log
-            git push origin HEAD:fix/mobile-assets
+            git push origin "HEAD:$MOBILE_FEATURE_BRANCH"
           fi
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   browser:

@@ -26,6 +26,18 @@ s=(ROOT/'game.html').read_text()
 m=re.search(r'window\.modDataValueZipList\s*=\s*(\[.*?\]);',s,re.S);assert m
 original_mods=[base64.b64decode(x) for x in json.loads(m[1])]
 assert len(original_mods)==25
+# Keep the existing compatibility fixes and append the wardrobe menu extension.
+for index,blob in enumerate(original_mods):
+ z=zipfile.ZipFile(io.BytesIO(blob));metadata=json.loads(z.read('boot.json'))
+ if metadata['name']=='DoLWebCompatibility':
+  files={n:z.read(n) for n in z.namelist() if not n.endswith('/')}
+  metadata['version']='0.5.12.13.2'
+  metadata['scriptFileList_preload']=['wardrobe-cheat.js']
+  files['boot.json']=json.dumps(metadata,ensure_ascii=False,separators=(',',':')).encode()
+  files['wardrobe-cheat.js']=(ROOT/'wardrobe-cheat.js').read_bytes()
+  original_mods[index]=packed(files)
+  break
+else:raise ValueError('Existing compatibility mod missing')
 art=zipfile.ZipFile(ROOT/'mods/DoLWebArtPack.mod.zip');boot=json.loads(art.read('boot.json'))
 images=boot['imgFileList'];assert len(images)==32779
 mapping=[];unique={}
