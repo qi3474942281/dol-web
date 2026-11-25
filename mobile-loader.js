@@ -2,7 +2,7 @@
 (() => {
  const $=id=>document.getElementById(id);
  const status=$('status'),detail=$('detail'),progress=$('progress');
- const state={build:'dol-mobile-11',received:0,retries:0,resources:0};window.DOLMobileLoadReport=state;
+ const state={build:'dol-mobile-12',received:0,retries:0,resources:0};window.DOLMobileLoadReport=state;
  let total=1;
  const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  function bound(p,ms,message){let timer;return Promise.race([p,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error(message)),ms))]).finally(()=>clearTimeout(timer));}
@@ -48,7 +48,7 @@
    return start(cached);
   }
   status.textContent='正在读取资源清单……';
-  const manifest=JSON.parse(new TextDecoder().decode(await window.DOLHttpQueue.read('mobile/manifest-11.json?mobile=11',{cache:'no-cache',timeoutMs:20000})));
+  const manifest=JSON.parse(new TextDecoder().decode(await window.DOLHttpQueue.read('mobile/manifest-12.json?mobile=12',{cache:'no-cache',timeoutMs:20000})));
   if(manifest.build!==state.build||manifest.mods.length!==26||!manifest.core.length)throw Error('手机资源版本不符，请稍后重试。');
   total=manifest.core.reduce((n,p)=>n+p.bytes,0)+manifest.mods.reduce((n,m)=>n+m.bytes,0);
   status.textContent='正在分批加载游戏……';
