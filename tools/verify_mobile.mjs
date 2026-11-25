@@ -278,6 +278,11 @@ try{
  await hall.click();
  await page.waitForFunction(()=>SugarCube.State.passage==='Orphanage');
  assert.equal(await clock(),startTime,'the real one-minute trip to the hall kept the clock frozen');
+ // The first trip to the hall can start a story event. Finish it before
+ // exercising the shortcut in a normal outdoor passage.
+ await page.evaluate(()=>SugarCube.Wikifier.wikifyEval('<<endevent>>'));
+ await script('Engine.play("Garden");');
+ await page.waitForFunction(()=>SugarCube.State.passage==='Garden');
  const origin=await page.evaluate(()=>State.variables.location);
  await openOther();
  await page.getByRole('button',{name:'打开衣柜',exact:true}).click();
@@ -287,11 +292,11 @@ try{
  assert.equal(await page.evaluate(()=>State.variables.wardrobe_location),'wardrobe');
  assert.equal(await page.evaluate(()=>State.variables.location),origin,'wardrobe shortcut retains world location');
  assert.deepEqual(await page.locator('#passages .error').allTextContents(),[]);
- await page.locator('#wardrobeExits a[data-passage="Orphanage"]').click();
- await page.waitForFunction(()=>SugarCube.State.passage==='Orphanage');
+ await page.locator('#wardrobeExits a[data-passage="Garden"]').click();
+ await page.waitForFunction(()=>SugarCube.State.passage==='Garden');
  assert.equal(await page.evaluate(()=>State.variables.dolWardrobeShortcut),undefined);
  assert.equal(await clock(),startTime);
- console.log('PASS wardrobe shortcut: opens the real bedroom wardrobe from the hall and returns there.');
+ console.log('PASS wardrobe shortcut: opens the real bedroom wardrobe from the garden and returns there.');
  await script('Time.pass(3600);');
  assert.equal(await clock(),startTime,'waiting kept the clock frozen');
  await script('window.__freezeLoaded=Save.slots.load(1);');
