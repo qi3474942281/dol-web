@@ -36,6 +36,17 @@
  const section=`\n<div class="settingsGrid"><div class="settingsHeader options">衣柜容量</div><div class="settingsToggleItemWide" id="dol-wardrobe-capacity-controls"><<dolWardrobeCapacity>></div></div><hr>\n`;
  const widget=`
 <<widget "dolWardrobeCapacity">>
+ <<if !_inWardrobe and State.passage isnot "Wardrobe">>
+  <<if $combat is 1 or $event isnot undefined or $tryOn?.autoReset is false>>
+   <span class="description">结束当前事件或试穿后可打开衣柜。</span>
+  <<else>>
+   <<button "打开衣柜" "Wardrobe">>
+    <<set $dolWardrobeShortcut to {passage: State.passage, location: $wardrobe_location}>>
+    <<run closeOverlay(); UIBar.stow(true)>>
+   <</button>>
+  <</if>>
+  <br><br>
+ <</if>>
  <<set _dolWardrobeInfo to window.DOLWardrobeCapacity.info(State.variables)>>
  <span class="gold">卧室衣柜：</span><strong id="dol-wardrobe-capacity-value"><<= _dolWardrobeInfo.capacity>></strong> 格（每类衣物）<br>
  <div style="display:flex;gap:1em;align-items:center;flex-wrap:wrap;margin:.6em 0">
@@ -49,6 +60,23 @@
  <span class="description">不能低于任一类已有衣物的数量（当前至少 <<= _dolWardrobeInfo.minimum>> 格）。修改后照常存档即可保留。</span>
 <</widget>>`;
  cheats.content=cheats.content.replace(marker,marker+section)+widget;
+ const wardrobe=patched.passageDataItems.items.find(passage=>passage.name==='Widgets Wardrobe');
+ const bedroom=patched.passageDataItems.items.find(passage=>passage.name==='Bedroom');
+ const close=/(<<case "Wardrobe">>\s*)(<<link \[\[[^\]\n]+\|Bedroom\]\]>><<cleanupOnWardrobeExit>><<\/link>>)/;
+ const entrance=/(<<link \[\[[^\]\n]+\|Wardrobe\]\]>>)(<<\/link>>)/;
+ if(!wardrobe||!close.test(wardrobe.content)||!bedroom||!entrance.test(bedroom.content))throw Error('Wardrobe shortcut links missing');
+ wardrobe.content=wardrobe.content.replace(close,(_,heading,defaultClose)=>heading+`
+   <<if $dolWardrobeShortcut and Story.has($dolWardrobeShortcut.passage)>>
+    <<link "关闭衣柜，返回原处" $dolWardrobeShortcut.passage>>
+     <<cleanupOnWardrobeExit>>
+     <<set $wardrobe_location to $dolWardrobeShortcut.location>>
+     <<unset $dolWardrobeShortcut>>
+    <</link>>
+   <<else>>
+    ${defaultClose}
+   <</if>>`);
+ // Entering normally from the bedroom clears any shortcut left by a history jump.
+ bedroom.content=bedroom.content.replace(entrance,'$1<<unset $dolWardrobeShortcut>>$2');
  const start='function wardrobeSpaceUpdater() {';
  const scripts=patched.scriptFileItems.items.filter(item=>item.content.includes(start));
  if(scripts.length!==1)throw Error('Wardrobe furniture updater target missing');

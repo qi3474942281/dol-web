@@ -57,7 +57,7 @@ try{
  await page.evaluate(()=>{localStorage.setItem('mobile-preserve-local','keep');sessionStorage.setItem('mobile-preserve-session','keep');});
  phase='mobile';errors.length=0;
  const coldStart=Date.now();
- await page.goto(base+'mobile.html?mobile=11',{waitUntil:'domcontentloaded',timeout:30000});await ready();
+ await page.goto(base+'mobile.html?mobile=12',{waitUntil:'domcontentloaded',timeout:30000});await ready();
  const coldMs=Date.now()-coldStart;
  assert.equal(await page.evaluate(()=>window.modSC2DataManager.getLanguageManager().mainLanguage),'zh');
  assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.delivery),'static-on-demand');
@@ -81,7 +81,7 @@ try{
  await script("window.__saveState={money:V.money,marker:V.mobilePreserveMarker};");
  assert.deepEqual(await page.evaluate(()=>window.__saveState),{money:123456,marker:'keep-mobile-save'});
  assert.match(await page.locator('#passages').innerText(),/[\u4e00-\u9fff]{3}/);
- const manifest=JSON.parse(await fs.readFile('mobile/manifest-11.json','utf8'));
+ const manifest=JSON.parse(await fs.readFile('mobile/manifest-12.json','utf8'));
  const samples=await page.evaluate(async items=>{
   const result={};
   for(const [name,item] of Object.entries(items)){
@@ -278,6 +278,20 @@ try{
  await hall.click();
  await page.waitForFunction(()=>SugarCube.State.passage==='Orphanage');
  assert.equal(await clock(),startTime,'the real one-minute trip to the hall kept the clock frozen');
+ const origin=await page.evaluate(()=>State.variables.location);
+ await openOther();
+ await page.getByRole('button',{name:'打开衣柜',exact:true}).click();
+ await page.waitForFunction(()=>SugarCube.State.passage==='Wardrobe');
+ await page.locator('#wardrobewear').waitFor();
+ await page.locator('#wardrobe-options-div').waitFor();
+ assert.equal(await page.evaluate(()=>State.variables.wardrobe_location),'wardrobe');
+ assert.equal(await page.evaluate(()=>State.variables.location),origin,'wardrobe shortcut retains world location');
+ assert.deepEqual(await page.locator('#passages .error').allTextContents(),[]);
+ await page.locator('#wardrobeExits a[data-passage="Orphanage"]').click();
+ await page.waitForFunction(()=>SugarCube.State.passage==='Orphanage');
+ assert.equal(await page.evaluate(()=>State.variables.dolWardrobeShortcut),undefined);
+ assert.equal(await clock(),startTime);
+ console.log('PASS wardrobe shortcut: opens the real bedroom wardrobe from the hall and returns there.');
  await script('Time.pass(3600);');
  assert.equal(await clock(),startTime,'waiting kept the clock frozen');
  await script('window.__freezeLoaded=Save.slots.load(1);');
@@ -293,6 +307,12 @@ try{
  await script('Save.slots.load(1);');
  await openOther();
  assert.equal(await freeze.isChecked(),false,'saved off state was restored');
+ await script('closeOverlay();UIBar.stow(true);');
+ await page.locator('#passages a[data-passage="Wardrobe"]').click();
+ await page.waitForFunction(()=>SugarCube.State.passage==='Wardrobe');
+ await page.locator('#wardrobeExits a[data-passage="Bedroom"]').click();
+ await page.waitForFunction(()=>SugarCube.State.passage==='Bedroom');
+ await openOther();
  assert.deepEqual(await page.locator('#customOverlayContent .error').allTextContents(),[]);
  console.log('PASS time freeze switch: default off, real travel and wait frozen, on/off saved and normal time restored.');
  const control=page.locator('#dol-wardrobe-capacity-controls');
@@ -332,7 +352,7 @@ try{
  await page.close();
  const warmPage=await context.newPage();
  const warmStart=Date.now();
- await warmPage.goto(base+'mobile.html?mobile=11',{waitUntil:'domcontentloaded'});
+ await warmPage.goto(base+'mobile.html?mobile=12',{waitUntil:'domcontentloaded'});
  await warmPage.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:90000});
  const warmMs=Date.now()-warmStart;
  assert.equal(warmRequests,0);
