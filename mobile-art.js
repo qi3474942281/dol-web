@@ -5,7 +5,6 @@
  const mapping=MAPPING;
  const byPath=new Map(mapping);
  const originals=new Map(Object.entries(ORIGINAL_VARIANTS));
- const legacyClothes=new Set(LEGACY_CLOTHES);
  const embedded=EMBEDDED_IMAGES;
  const originalPrefix='dol-original:';
  const originalSrc=path=>originals.has(path)?originalPrefix+path:path;
@@ -62,8 +61,7 @@
 
  window.DOLMobileArt={
   matchClothing(layers){
-   const wardrobe=layers.filter(layer=>layer.show!==false&&typeof layer.src==='string'&&layer.src.startsWith('img/clothes/'));
-   if(!wardrobe.some(layer=>legacyClothes.has(layer.src.split('/').slice(0,4).join('/'))))return layers;
+   // Main character and shop models must use clothing and body layers from the same sprite set.
    return layers.map(layer=>{
     if(layer.show===false)return layer;
     const mapMask=mask=>typeof mask==='string'?originalSrc(mask):mask?.path?{...mask,path:originalSrc(mask.path)}:mask;

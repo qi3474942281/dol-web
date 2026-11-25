@@ -1,7 +1,7 @@
 name: Build and verify mobile resource delivery
 on:
   push:
-    branches: ['fix/mobile-assets', 'fix/wardrobe-capacity', 'fix/request-pacing', 'fix/mobile-performance', 'fix/mobile-clothing-composition']
+    branches: ['fix/mobile-assets', 'fix/wardrobe-capacity', 'fix/request-pacing', 'fix/mobile-performance', 'fix/mobile-clothing-composition', 'fix/sync-clothing-compat']
     paths-ignore: ['mobile/**', 'mobile.html', 'index.html', 'play.html', 'launch.html', 'start.html']
   workflow_dispatch:
 concurrency:
