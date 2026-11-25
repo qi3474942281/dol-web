@@ -285,7 +285,7 @@ try{
  await page.waitForFunction(()=>SugarCube.State.passage==='Garden');
  const origin=await page.evaluate(()=>State.variables.location);
  await openOther();
- await page.getByRole('button',{name:'打开衣柜',exact:true}).click();
+ await page.locator('#dol-wardrobe-capacity-controls button[data-passage="Wardrobe"]').click();
  await page.waitForFunction(()=>SugarCube.State.passage==='Wardrobe');
  await page.locator('#wardrobewear').waitFor();
  await page.locator('#wardrobe-options-div').waitFor();
