@@ -1,0 +1,612 @@
+{
+  "build": "dol-mobile-11",
+  "source_game_sha256": "9408de035994247cb7bf92d2820124e49fcd6f42908a9b9666e0cf03a5da43a4",
+  "core_sha256": "bb0c2ae0d8ca898059f0ce9d77c5cc6502998ad2803a630f4753137bcf76091a",
+  "core_bytes": 54800624,
+  "core": [
+    {
+      "path": "mobile/core/af049efc949c77af29e8f8c0f2e39100727df871f87ea071d98716deeb4b04fe.bin",
+      "bytes": 798137,
+      "sha256": "af049efc949c77af29e8f8c0f2e39100727df871f87ea071d98716deeb4b04fe",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/478c3ab11cfeadd495b7f34c2cc2f16a212b01e9ecebf21b245aec159c39c139.bin",
+      "bytes": 973768,
+      "sha256": "478c3ab11cfeadd495b7f34c2cc2f16a212b01e9ecebf21b245aec159c39c139",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/698cc5eea9d24a6febd046f54662497d83a99cc1a0a7dc9f7273d7630900b5f4.bin",
+      "bytes": 543524,
+      "sha256": "698cc5eea9d24a6febd046f54662497d83a99cc1a0a7dc9f7273d7630900b5f4",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/f020ac4536703bd0e0c4812c7a57470394132f52cd635a6552613203a8c29d00.bin",
+      "bytes": 554752,
+      "sha256": "f020ac4536703bd0e0c4812c7a57470394132f52cd635a6552613203a8c29d00",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/98583dc20287381930f14fbc10a167da5dee2f52c0d1f5582e3cd8d5a41fcb28.bin",
+      "bytes": 719251,
+      "sha256": "98583dc20287381930f14fbc10a167da5dee2f52c0d1f5582e3cd8d5a41fcb28",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/2bcdbd91803e5b41a957d430ee101fc46b30b68c9ecdc573cbe4a7fd641f4403.bin",
+      "bytes": 799398,
+      "sha256": "2bcdbd91803e5b41a957d430ee101fc46b30b68c9ecdc573cbe4a7fd641f4403",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/ac53052229cac19bd05299fc6e1e84875ebdf3d0c7bd8c640ecd172b38f19ac1.bin",
+      "bytes": 737785,
+      "sha256": "ac53052229cac19bd05299fc6e1e84875ebdf3d0c7bd8c640ecd172b38f19ac1",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/91f2a4cdf60a292643926ec5be1a7d2f185a056ceffaf81bbdd79008f62d227a.bin",
+      "bytes": 771511,
+      "sha256": "91f2a4cdf60a292643926ec5be1a7d2f185a056ceffaf81bbdd79008f62d227a",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/3f24126ad7ebe97fb00d075ea98286e3529812f2d06850472ae773dea9cca74b.bin",
+      "bytes": 788404,
+      "sha256": "3f24126ad7ebe97fb00d075ea98286e3529812f2d06850472ae773dea9cca74b",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/dfa3407e3632f40cc628048d6b28b4bf1e98218c8965f0e7bf8016504d5838bf.bin",
+      "bytes": 760929,
+      "sha256": "dfa3407e3632f40cc628048d6b28b4bf1e98218c8965f0e7bf8016504d5838bf",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/80e2ba2b5f93eae7ebdd4df9f7a900d1183b2de4207de0f69119c909c6cc778a.bin",
+      "bytes": 730081,
+      "sha256": "80e2ba2b5f93eae7ebdd4df9f7a900d1183b2de4207de0f69119c909c6cc778a",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/e738608ca4974d76961f3bfad3a65cfc5166334af85d6187bd217b30bdd452e6.bin",
+      "bytes": 794447,
+      "sha256": "e738608ca4974d76961f3bfad3a65cfc5166334af85d6187bd217b30bdd452e6",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/3028bbed8a41f064628793d9227773ef3629e0a4b7f8ec61619887e6431dc9ba.bin",
+      "bytes": 763449,
+      "sha256": "3028bbed8a41f064628793d9227773ef3629e0a4b7f8ec61619887e6431dc9ba",
+      "raw_bytes": 4194304,
+      "gzip": true
+    },
+    {
+      "path": "mobile/core/33c880ba5d584f547d39d041cca3af0528327cefd10565afb9ec84bff20e7c63.bin",
+      "bytes": 65727,
+      "sha256": "33c880ba5d584f547d39d041cca3af0528327cefd10565afb9ec84bff20e7c63",
+      "raw_bytes": 274672,
+      "gzip": true
+    }
+  ],
+  "mods": [
+    {
+      "name": "ModLoaderGui",
+      "bytes": 923523,
+      "sha256": "85a5eab6e1fa74058cab2c8b5150e393dad62f863aac034bcea37a7a1568f40a",
+      "parts": [
+        {
+          "path": "mobile/mods/85a5eab6e1fa74058cab2c8b5150e393dad62f863aac034bcea37a7a1568f40a.bin",
+          "bytes": 923523,
+          "sha256": "85a5eab6e1fa74058cab2c8b5150e393dad62f863aac034bcea37a7a1568f40a",
+          "raw_bytes": 923523,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ConflictChecker",
+      "bytes": 275010,
+      "sha256": "8644ff5fd7a635310c0d2e70cfd94ee968202a90e11a89a043cf5fcaaae8ce26",
+      "parts": [
+        {
+          "path": "mobile/mods/8644ff5fd7a635310c0d2e70cfd94ee968202a90e11a89a043cf5fcaaae8ce26.bin",
+          "bytes": 275010,
+          "sha256": "8644ff5fd7a635310c0d2e70cfd94ee968202a90e11a89a043cf5fcaaae8ce26",
+          "raw_bytes": 275010,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ModLoader DoL ImageLoaderHook",
+      "bytes": 304387,
+      "sha256": "ac676fe836ad36f1d2e3b03edecf9c42b61a17a1f10d2020c02f438dd0a6e884",
+      "parts": [
+        {
+          "path": "mobile/mods/ac676fe836ad36f1d2e3b03edecf9c42b61a17a1f10d2020c02f438dd0a6e884.bin",
+          "bytes": 304387,
+          "sha256": "ac676fe836ad36f1d2e3b03edecf9c42b61a17a1f10d2020c02f438dd0a6e884",
+          "raw_bytes": 304387,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ModSubUiAngularJs",
+      "bytes": 1217702,
+      "sha256": "26c746e709300d82783703d2a3b1b7166f8c17947c1c56c3491d77df4ab87d96",
+      "parts": [
+        {
+          "path": "mobile/mods/3bde3afcfb9d090915adad4f5cc5138f6c89b9a30ec66c7e4cd84cbb71d8e28d.bin",
+          "bytes": 1048576,
+          "sha256": "3bde3afcfb9d090915adad4f5cc5138f6c89b9a30ec66c7e4cd84cbb71d8e28d",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/0f7bafebcd2a0869134f11c2569478a0175df353a55655aab7e313e177c15a72.bin",
+          "bytes": 169126,
+          "sha256": "0f7bafebcd2a0869134f11c2569478a0175df353a55655aab7e313e177c15a72",
+          "raw_bytes": 169126,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "BeautySelectorAddon",
+      "bytes": 438782,
+      "sha256": "c17628ac397e596084364adf24bacb6638d6c9daa2b3a25bf26fae48f73e0f31",
+      "parts": [
+        {
+          "path": "mobile/mods/c17628ac397e596084364adf24bacb6638d6c9daa2b3a25bf26fae48f73e0f31.bin",
+          "bytes": 438782,
+          "sha256": "c17628ac397e596084364adf24bacb6638d6c9daa2b3a25bf26fae48f73e0f31",
+          "raw_bytes": 438782,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ImageLoaderHook2BeautySelectorAddon",
+      "bytes": 271319,
+      "sha256": "0c7969d889ef439f5be1205f4b5faf8b637728907cdeda1255f70baefb749b44",
+      "parts": [
+        {
+          "path": "mobile/mods/0c7969d889ef439f5be1205f4b5faf8b637728907cdeda1255f70baefb749b44.bin",
+          "bytes": 271319,
+          "sha256": "0c7969d889ef439f5be1205f4b5faf8b637728907cdeda1255f70baefb749b44",
+          "raw_bytes": 271319,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "CheckGameVersion",
+      "bytes": 268094,
+      "sha256": "63cca865c2d3229d2fefaa59cebfa4d7539233901f9039f52d39a46609c32cb7",
+      "parts": [
+        {
+          "path": "mobile/mods/63cca865c2d3229d2fefaa59cebfa4d7539233901f9039f52d39a46609c32cb7.bin",
+          "bytes": 268094,
+          "sha256": "63cca865c2d3229d2fefaa59cebfa4d7539233901f9039f52d39a46609c32cb7",
+          "raw_bytes": 268094,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "CheckDoLCompressorDictionaries",
+      "bytes": 4243,
+      "sha256": "ddaffee89a04174de171db87f680297f1fc8be869051101dd8007d03a4e3c302",
+      "parts": [
+        {
+          "path": "mobile/mods/ddaffee89a04174de171db87f680297f1fc8be869051101dd8007d03a4e3c302.bin",
+          "bytes": 4243,
+          "sha256": "ddaffee89a04174de171db87f680297f1fc8be869051101dd8007d03a4e3c302",
+          "raw_bytes": 4243,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "TweeReplacerLinker",
+      "bytes": 6330,
+      "sha256": "ac06160a156432b6716433f7cfb1e3ba234e3bea0b28f403e87e356098b95ea9",
+      "parts": [
+        {
+          "path": "mobile/mods/ac06160a156432b6716433f7cfb1e3ba234e3bea0b28f403e87e356098b95ea9.bin",
+          "bytes": 6330,
+          "sha256": "ac06160a156432b6716433f7cfb1e3ba234e3bea0b28f403e87e356098b95ea9",
+          "raw_bytes": 6330,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "TweeReplacer",
+      "bytes": 310584,
+      "sha256": "2064e0e1bfa5fac782f2c249f5cbb0509ccfc07f1a8ab35022712a592f0fe37d",
+      "parts": [
+        {
+          "path": "mobile/mods/2064e0e1bfa5fac782f2c249f5cbb0509ccfc07f1a8ab35022712a592f0fe37d.bin",
+          "bytes": 310584,
+          "sha256": "2064e0e1bfa5fac782f2c249f5cbb0509ccfc07f1a8ab35022712a592f0fe37d",
+          "raw_bytes": 310584,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "I18nTweeReplacer",
+      "bytes": 321766,
+      "sha256": "20ec4c280082c9cd6ce3fcb7eadbc797b80af644adbe1edd645632ca9501637a",
+      "parts": [
+        {
+          "path": "mobile/mods/20ec4c280082c9cd6ce3fcb7eadbc797b80af644adbe1edd645632ca9501637a.bin",
+          "bytes": 321766,
+          "sha256": "20ec4c280082c9cd6ce3fcb7eadbc797b80af644adbe1edd645632ca9501637a",
+          "raw_bytes": 321766,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "I18nTweeList",
+      "bytes": 272361,
+      "sha256": "27c869ae7d5e7099b25bee8efd479e71db2b7591e39a827b63194a7125428a93",
+      "parts": [
+        {
+          "path": "mobile/mods/27c869ae7d5e7099b25bee8efd479e71db2b7591e39a827b63194a7125428a93.bin",
+          "bytes": 272361,
+          "sha256": "27c869ae7d5e7099b25bee8efd479e71db2b7591e39a827b63194a7125428a93",
+          "raw_bytes": 272361,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "I18nScriptList",
+      "bytes": 272032,
+      "sha256": "2c3d57afee8586f16b88f3f1739e0a1865d1a9721ca189d0e47713d95531c3f2",
+      "parts": [
+        {
+          "path": "mobile/mods/2c3d57afee8586f16b88f3f1739e0a1865d1a9721ca189d0e47713d95531c3f2.bin",
+          "bytes": 272032,
+          "sha256": "2c3d57afee8586f16b88f3f1739e0a1865d1a9721ca189d0e47713d95531c3f2",
+          "raw_bytes": 272032,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ReplacePatcher",
+      "bytes": 273423,
+      "sha256": "05dcfca91e94a744c746b0f125a1262914d3918637a570f9f0a81eeca10b6ed2",
+      "parts": [
+        {
+          "path": "mobile/mods/05dcfca91e94a744c746b0f125a1262914d3918637a570f9f0a81eeca10b6ed2.bin",
+          "bytes": 273423,
+          "sha256": "05dcfca91e94a744c746b0f125a1262914d3918637a570f9f0a81eeca10b6ed2",
+          "raw_bytes": 273423,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "TweePrefixPostfixAddon",
+      "bytes": 11575,
+      "sha256": "584d3760336a2ce956a3a90acf93ec9ff8935c66b8447e48ca6dd4140e5aa887",
+      "parts": [
+        {
+          "path": "mobile/mods/584d3760336a2ce956a3a90acf93ec9ff8935c66b8447e48ca6dd4140e5aa887.bin",
+          "bytes": 11575,
+          "sha256": "584d3760336a2ce956a3a90acf93ec9ff8935c66b8447e48ca6dd4140e5aa887",
+          "raw_bytes": 11575,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "Diff3WayMerge",
+      "bytes": 499819,
+      "sha256": "4a1e7b6daf70fdefdfecdb8be1d609525bc2e09467d924a3781c8c4a6d2e5630",
+      "parts": [
+        {
+          "path": "mobile/mods/4a1e7b6daf70fdefdfecdb8be1d609525bc2e09467d924a3781c8c4a6d2e5630.bin",
+          "bytes": 499819,
+          "sha256": "4a1e7b6daf70fdefdfecdb8be1d609525bc2e09467d924a3781c8c4a6d2e5630",
+          "raw_bytes": 499819,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "DoLTimeWrapperAddon",
+      "bytes": 289544,
+      "sha256": "bd4f042d7fd93cd7d6d2ff9694e4a5a27c8152267688ddb5d89c561472dd74ec",
+      "parts": [
+        {
+          "path": "mobile/mods/bd4f042d7fd93cd7d6d2ff9694e4a5a27c8152267688ddb5d89c561472dd74ec.bin",
+          "bytes": 289544,
+          "sha256": "bd4f042d7fd93cd7d6d2ff9694e4a5a27c8152267688ddb5d89c561472dd74ec",
+          "raw_bytes": 289544,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ModdedClothesAddon",
+      "bytes": 317343,
+      "sha256": "e6d645008b6610e0ba7749875dc8f54b85404ce451b56882600ae9bd82e3e53d",
+      "parts": [
+        {
+          "path": "mobile/mods/e6d645008b6610e0ba7749875dc8f54b85404ce451b56882600ae9bd82e3e53d.bin",
+          "bytes": 317343,
+          "sha256": "e6d645008b6610e0ba7749875dc8f54b85404ce451b56882600ae9bd82e3e53d",
+          "raw_bytes": 317343,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ModdedHairAddon",
+      "bytes": 308691,
+      "sha256": "3347567b77a6bc84419fcf15538fcbafd197732122357cf8a60d87f7a81f1b4f",
+      "parts": [
+        {
+          "path": "mobile/mods/3347567b77a6bc84419fcf15538fcbafd197732122357cf8a60d87f7a81f1b4f.bin",
+          "bytes": 308691,
+          "sha256": "3347567b77a6bc84419fcf15538fcbafd197732122357cf8a60d87f7a81f1b4f",
+          "raw_bytes": 308691,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ModdedFeatsAddon",
+      "bytes": 307930,
+      "sha256": "827f850ba4c3a3f77d2630dc82b73cbdbd0a2652ff68a201b068c6219f80bfd7",
+      "parts": [
+        {
+          "path": "mobile/mods/827f850ba4c3a3f77d2630dc82b73cbdbd0a2652ff68a201b068c6219f80bfd7.bin",
+          "bytes": 307930,
+          "sha256": "827f850ba4c3a3f77d2630dc82b73cbdbd0a2652ff68a201b068c6219f80bfd7",
+          "raw_bytes": 307930,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "SweetAlert2Mod",
+      "bytes": 135150,
+      "sha256": "3be2f8d0d4d00bfa48427b48ddea4247c87a45599b4178488f94aeaec1c11ac6",
+      "parts": [
+        {
+          "path": "mobile/mods/3be2f8d0d4d00bfa48427b48ddea4247c87a45599b4178488f94aeaec1c11ac6.bin",
+          "bytes": 135150,
+          "sha256": "3be2f8d0d4d00bfa48427b48ddea4247c87a45599b4178488f94aeaec1c11ac6",
+          "raw_bytes": 135150,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ModuleCssReplacer",
+      "bytes": 274458,
+      "sha256": "996ccc3116af16e3af4564b4b751ae776e7e47ea768008ac132622a2fd60d687",
+      "parts": [
+        {
+          "path": "mobile/mods/996ccc3116af16e3af4564b4b751ae776e7e47ea768008ac132622a2fd60d687.bin",
+          "bytes": 274458,
+          "sha256": "996ccc3116af16e3af4564b4b751ae776e7e47ea768008ac132622a2fd60d687",
+          "raw_bytes": 274458,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "DoLLinkButtonFilter",
+      "bytes": 30915,
+      "sha256": "9050a95a10bf8044e301cc78fd92b5fa084b5d04bc31a57eb6f32fd0ad83ee3a",
+      "parts": [
+        {
+          "path": "mobile/mods/9050a95a10bf8044e301cc78fd92b5fa084b5d04bc31a57eb6f32fd0ad83ee3a.bin",
+          "bytes": 30915,
+          "sha256": "9050a95a10bf8044e301cc78fd92b5fa084b5d04bc31a57eb6f32fd0ad83ee3a",
+          "raw_bytes": 30915,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "ModI18N",
+      "bytes": 13917526,
+      "sha256": "af3950ec751442dbf6af5dac42ae3cee0fea67fc1944a836ffc8c3a8e5407be3",
+      "parts": [
+        {
+          "path": "mobile/mods/0b2accd627457b6f2acb7d6e46ff51ba89271aaa1daa33218394828ac620b4d4.bin",
+          "bytes": 1048576,
+          "sha256": "0b2accd627457b6f2acb7d6e46ff51ba89271aaa1daa33218394828ac620b4d4",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/c76dd2f45b98b8b1436dd2f41b058ae9613103f92d73e0d59210710c6836a2fa.bin",
+          "bytes": 1048576,
+          "sha256": "c76dd2f45b98b8b1436dd2f41b058ae9613103f92d73e0d59210710c6836a2fa",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/46d795dc64faff96682a501373a054a0292c37e5693e4cb1da21c8943fbb8bc2.bin",
+          "bytes": 1048576,
+          "sha256": "46d795dc64faff96682a501373a054a0292c37e5693e4cb1da21c8943fbb8bc2",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/2010e83d9d08685ee167513322841b3a9280d84ff69b65fd3b6c57cece2af040.bin",
+          "bytes": 1048576,
+          "sha256": "2010e83d9d08685ee167513322841b3a9280d84ff69b65fd3b6c57cece2af040",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/4850089a98416f78f16339c25045bab5090e5a5c3eb78cc56835e0624a7331e6.bin",
+          "bytes": 1048576,
+          "sha256": "4850089a98416f78f16339c25045bab5090e5a5c3eb78cc56835e0624a7331e6",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/0c9b63ed0f1e74821a4c1643ea64d755fb3b0c57125648c3db36934fcf09c8a7.bin",
+          "bytes": 1048576,
+          "sha256": "0c9b63ed0f1e74821a4c1643ea64d755fb3b0c57125648c3db36934fcf09c8a7",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/339dd4947b7b0c0b0d7f157aaa1f6318ca82beb05e7015bbe17276003ad6e077.bin",
+          "bytes": 1048576,
+          "sha256": "339dd4947b7b0c0b0d7f157aaa1f6318ca82beb05e7015bbe17276003ad6e077",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/d3d40a24d84c42bbd57e6dfd3ce286de7274808eff7e91912348723f6477feaf.bin",
+          "bytes": 1048576,
+          "sha256": "d3d40a24d84c42bbd57e6dfd3ce286de7274808eff7e91912348723f6477feaf",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/95a19be8ace7f759203b2f4d12597fd43707a333fcdfd93ee5fcc74e60f2317e.bin",
+          "bytes": 1048576,
+          "sha256": "95a19be8ace7f759203b2f4d12597fd43707a333fcdfd93ee5fcc74e60f2317e",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/853d33da17ef4fd942c1d6c34bc8913bbac55b96bc18f2ccd529f13a244cc3b5.bin",
+          "bytes": 1048576,
+          "sha256": "853d33da17ef4fd942c1d6c34bc8913bbac55b96bc18f2ccd529f13a244cc3b5",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/29881e3c85b03a1cdc6914198644965ad9fe2133f504a05f58d2cdf0f7fbb548.bin",
+          "bytes": 1048576,
+          "sha256": "29881e3c85b03a1cdc6914198644965ad9fe2133f504a05f58d2cdf0f7fbb548",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/809203bbda538f3c92f88eea3376c8a30f8f4855a46318facc56822c08288d2b.bin",
+          "bytes": 1048576,
+          "sha256": "809203bbda538f3c92f88eea3376c8a30f8f4855a46318facc56822c08288d2b",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/f31b14a3c232fbb75b216ed8cfc5df4c227bc7ee154cb5031dd0285870b8f24b.bin",
+          "bytes": 1048576,
+          "sha256": "f31b14a3c232fbb75b216ed8cfc5df4c227bc7ee154cb5031dd0285870b8f24b",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/ca7dc3ec7e7167a580db99158dcc4c8a98384ee76d0d1a54f2fc8246e70eef96.bin",
+          "bytes": 286038,
+          "sha256": "ca7dc3ec7e7167a580db99158dcc4c8a98384ee76d0d1a54f2fc8246e70eef96",
+          "raw_bytes": 286038,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "DoLWebCompatibility",
+      "bytes": 4244,
+      "sha256": "2762001ad4e86b4a7556411c3fee1299616e7a0b45af50633cf062186a51cc35",
+      "parts": [
+        {
+          "path": "mobile/mods/2762001ad4e86b4a7556411c3fee1299616e7a0b45af50633cf062186a51cc35.bin",
+          "bytes": 4244,
+          "sha256": "2762001ad4e86b4a7556411c3fee1299616e7a0b45af50633cf062186a51cc35",
+          "raw_bytes": 4244,
+          "gzip": false
+        }
+      ]
+    },
+    {
+      "name": "DoLWebArtPack",
+      "bytes": 1946079,
+      "sha256": "85ec3446511a08ac4bcfc4ecebb907d23afdf753205fba771604e165f5183282",
+      "parts": [
+        {
+          "path": "mobile/mods/c29f30a5f78cea84d02d134a45a62d8e10bca11af4775ae6726d3f08b2abe40a.bin",
+          "bytes": 1048576,
+          "sha256": "c29f30a5f78cea84d02d134a45a62d8e10bca11af4775ae6726d3f08b2abe40a",
+          "raw_bytes": 1048576,
+          "gzip": false
+        },
+        {
+          "path": "mobile/mods/959993290365a1cf806a631c51d4b80b47bb14b153ccd097bcc4fedbf296a577.bin",
+          "bytes": 897503,
+          "sha256": "959993290365a1cf806a631c51d4b80b47bb14b153ccd097bcc4fedbf296a577",
+          "raw_bytes": 897503,
+          "gzip": false
+        }
+      ]
+    }
+  ],
+  "artwork": {
+    "mode": "BESC+UCB",
+    "source": "https://github.com/DoL-Lyra/Lyra/releases/download/v0.5.12.13-1.0.1a-1004.1/DoL-0.5.12.13-Lyra-1.0.1a-besc-ucb-1004.1.zip",
+    "tag": "v0.5.12.13-1.0.1a-1004.1",
+    "source_sha256": "47a793b1c06c36aea5388d9743d50f1ab2557deae6c4155f92cded5a237b7b70",
+    "images": 32779,
+    "replaced_original_images": 9688,
+    "samples": {
+      "body": {
+        "path": "img/body/base-classic.png",
+        "sha256": "a60813d1f43f0c25edac7f53cfc46bbca85dda6e90975a4d5dfba01bcc8a0d89"
+      },
+      "face": {
+        "path": "img/face/default/aloof/brow-low.png",
+        "sha256": "94ff6f0ae819f3c9b3eaba1b3c6c7f9030549f39d83c160d380037add4355ce0"
+      },
+      "hair": {
+        "path": "img/hair/back/afro pouf/feet.png",
+        "sha256": "ebefe70cb83dcb78b1f111464a2c78265cc27349703bfe55d8ce7961735d2501"
+      },
+      "clothes": {
+        "path": "img/clothes/belly/belly-mask-lower-shadow-2.png",
+        "sha256": "0e9653064eabacfef0b9a260e206f20cecc0f220eebef6aaa1e5b1651a626838"
+      },
+      "sex": {
+        "path": "img/sex/close/chest/0.png",
+        "sha256": "1cf1bee8862a6397135dbc1907227c484dc9c0d9798195fcab1030cbc93d0095"
+      }
+    },
+    "delivery": "static-on-demand"
+  },
+  "static_images": 32779,
+  "unique_images": 30737,
+  "static_image_bytes": 92321896,
+  "max_resource_bytes": 1048576
+}
