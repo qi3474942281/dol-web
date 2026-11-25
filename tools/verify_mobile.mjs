@@ -57,7 +57,7 @@ try{
  await page.evaluate(()=>{localStorage.setItem('mobile-preserve-local','keep');sessionStorage.setItem('mobile-preserve-session','keep');});
  phase='mobile';errors.length=0;
  const coldStart=Date.now();
- await page.goto(base+'mobile.html?mobile=9',{waitUntil:'domcontentloaded',timeout:30000});await ready();
+ await page.goto(base+'mobile.html?mobile=10',{waitUntil:'domcontentloaded',timeout:30000});await ready();
  const coldMs=Date.now()-coldStart;
  assert.equal(await page.evaluate(()=>window.modSC2DataManager.getLanguageManager().mainLanguage),'zh');
  assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.delivery),'static-on-demand');
@@ -81,7 +81,7 @@ try{
  await script("window.__saveState={money:V.money,marker:V.mobilePreserveMarker};");
  assert.deepEqual(await page.evaluate(()=>window.__saveState),{money:123456,marker:'keep-mobile-save'});
  assert.match(await page.locator('#passages').innerText(),/[\u4e00-\u9fff]{3}/);
- const manifest=JSON.parse(await fs.readFile('mobile/manifest-9.json','utf8'));
+ const manifest=JSON.parse(await fs.readFile('mobile/manifest-10.json','utf8'));
  const samples=await page.evaluate(async items=>{
   const result={};
   for(const [name,item] of Object.entries(items)){
@@ -117,8 +117,62 @@ try{
  assert.equal(shopPreview.visible,true);
  assert.ok(shopPreview.paths.includes('dol-original:img/body/mannequin/base-body.png'),'the real shop mannequin uses the original body');
  for(const slot of ['upper','lower']){
-  assert.ok(shopPreview.paths.some(path=>typeof path==='string'&&path.startsWith('img/clothes/'+slot+'/milkmaid dress/')),'preview draws the matching dress '+slot);
+  assert.ok(shopPreview.paths.some(path=>typeof path==='string'&&path.replace(/^dol-original:/,'').startsWith('img/clothes/'+slot+'/milkmaid dress/')),'preview draws the matching dress '+slot);
  }
+ const clothingRegression=await page.evaluate(async()=>{
+  const config=SugarCube.setup||window.setup;
+  const model=Renderer.locateModel('main');
+  const results=[];
+  for(const [slot,name] of [['upper','diving'],['legs','nursesocks'],['feet','trainers']]){
+   const index=config.clothes[slot].findIndex(item=>item.variable===name);
+   const item=config.clothes[slot][index];
+   const prefix='dol-original:img/clothes/'+slot+'/'+name+'/';
+   const image=new Image();
+   image.src=await DOLMobileArt.source(prefix+'full.png');
+   await image.decode();
+   const sprite=document.createElement('canvas');
+   sprite.width=image.naturalWidth;
+   sprite.height=image.naturalHeight;
+   const ctx=sprite.getContext('2d');
+   ctx.drawImage(image,0,0);
+   const pixels=ctx.getImageData(0,0,sprite.width,sprite.height).data;
+   if(sprite.width!==256||sprite.height!==128||!pixels.some((a,i)=>i%4===3&&a>0)){
+    throw Error('Expected a visible original two-frame sprite: '+name);
+   }
+   for(const mannequin of [true,false]){
+    model.reset();
+    const options=model.defaultOptions();
+    Object.assign(options,{mannequin,show_face:false,show_hair:false,breasts:'default',breast_size:3,alt_override:mannequin?1:0});
+    Object.assign(options.worn[slot],{
+     index,colour:item.colour_options?.[0]||'',accColour:item.accessory_colour_options?.[0]||'',pattern:item.pattern_options?.[0]||'',
+    });
+    for(const [secondary,linkedName] of Object.entries(item.outfitPrimary||{})){
+     const linked=config.clothes[secondary]?.findIndex(clothing=>clothing.name===linkedName);
+     if(linked>0&&options.worn[secondary])options.worn[secondary].index=linked;
+    }
+    const layers=model.compile(options).filter(layer=>layer.show!==false);
+    if(!layers.some(layer=>String(layer.src).startsWith(prefix)))throw Error('Original clothing layer was not selected: '+name+' / '+mannequin);
+    if(!layers.some(layer=>String(layer.src).startsWith('dol-original:img/body/')))throw Error('Original body layer was not selected: '+name+' / '+mannequin);
+    const canvas=model.createCanvas(true);
+    await new Promise((resolve,reject)=>{
+     const timer=setTimeout(()=>reject(Error('Garment did not finish rendering: '+name+' / '+mannequin)),35000);
+     Renderer.composeLayers(canvas,layers,model.frames,{
+      renderingDone(){
+       clearTimeout(timer);
+       const pixels=canvas.getImageData(0,0,canvas.canvas.width,canvas.canvas.height).data;
+       if(pixels.some((a,i)=>i%4===3&&a>0))resolve();
+       else reject(Error('Empty garment composition: '+name+' / '+mannequin));
+      },
+      error(error){clearTimeout(timer);reject(error);}
+     });
+    });
+    results.push({name,mannequin});
+   }
+  }
+  return results;
+ });
+ assert.equal(clothingRegression.length,6);
+ console.log('PASS diving suit, nurse socks and trainers on shop mannequin and player model.');
  const fallbackComposition=await page.evaluate(async()=>{
   const target=document.createElement('canvas').getContext('2d');
   const source=document.createElement('canvas');
@@ -246,7 +300,7 @@ try{
  await page.close();
  const warmPage=await context.newPage();
  const warmStart=Date.now();
- await warmPage.goto(base+'mobile.html?mobile=9',{waitUntil:'domcontentloaded'});
+ await warmPage.goto(base+'mobile.html?mobile=10',{waitUntil:'domcontentloaded'});
  await warmPage.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:90000});
  const warmMs=Date.now()-warmStart;
  assert.equal(warmRequests,0);
