@@ -3,7 +3,7 @@
  const previous=manager.getSC2DataInfoAfterPatch();
  const patched=previous.cloneSC2DataInfo();
  const cheats=patched.passageDataItems.items.find(passage=>passage.name==='Cheats');
- const timeSection=/(<<widget "cheats-other">>[\s\S]*?<div class="settingsHeader options">[^<]+<\/div>)/;
+ const timeSection=/<div class="settingsHeader options">\s*(?:Time and Weather|时间与天气)\s*<\/div>/;
  if(!cheats||!timeSection.test(cheats.content))throw Error('Time and Weather cheat section missing');
  const control=`
   <div class="settingsToggleItemWide">

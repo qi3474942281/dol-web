@@ -263,7 +263,10 @@ try{
  };
  await openOther();
  assert.ok((await page.locator('#customOverlayContent').innerText()).includes('时间与天气'),'existing cheat translation retained');
- const freeze=page.getByRole('checkbox',{name:'时间不流逝'});
+ const timeSettings=page.locator('#customOverlayContent .settingsGrid').filter({
+  has:page.locator('.settingsHeader').filter({hasText:'时间与天气'}),
+ });
+ const freeze=timeSettings.getByRole('checkbox',{name:'时间不流逝'});
  assert.equal(await freeze.isChecked(),false,'old saves start with the switch off');
  const clock=()=>page.evaluate(()=>State.variables.timeStamp);
  const startTime=await clock();
