@@ -27,15 +27,16 @@ s=(ROOT/'game.html').read_text()
 m=re.search(r'window\.modDataValueZipList\s*=\s*(\[.*?\]);',s,re.S);assert m
 original_mods=[base64.b64decode(x) for x in json.loads(m[1])]
 assert len(original_mods)==25
-# Keep the existing compatibility fixes and append the wardrobe menu extension.
+# Keep the existing compatibility fixes and add the custom cheat controls.
 for index,blob in enumerate(original_mods):
  z=zipfile.ZipFile(io.BytesIO(blob));metadata=json.loads(z.read('boot.json'))
  if metadata['name']=='DoLWebCompatibility':
   files={n:z.read(n) for n in z.namelist() if not n.endswith('/')}
-  metadata['version']='0.5.12.13.2'
-  metadata['scriptFileList_preload']=['wardrobe-cheat.js']
+  metadata['version']='0.5.12.13.3'
+  metadata['scriptFileList_preload']=['wardrobe-cheat.js','freeze-time-cheat.js']
   files['boot.json']=json.dumps(metadata,ensure_ascii=False,separators=(',',':')).encode()
   files['wardrobe-cheat.js']=(ROOT/'wardrobe-cheat.js').read_bytes()
+  files['freeze-time-cheat.js']=(ROOT/'freeze-time-cheat.js').read_bytes()
   original_mods[index]=packed(files)
   break
 else:raise ValueError('Existing compatibility mod missing')
@@ -90,16 +91,16 @@ window.dolPrepareArtPack=async()=>{
 s=s.replace(old,prepare,1)
 assert re.search(r'<tw-storydata[^>]*>',s)[0]==re.search(r'<tw-storydata[^>]*>',(ROOT/'game.html').read_text())[0]
 core=patch_renderers(s).encode();core_parts=parts(core,'core',True)
-manifest={'build':'dol-mobile-10','source_game_sha256':sha((ROOT/'game.html').read_bytes()),'core_sha256':sha(core),'core_bytes':len(core),'core':core_parts,'mods':mods,'artwork':report,'static_images':len(images),'unique_images':len(unique),'static_image_bytes':sum(unique.values()),'max_resource_bytes':LIMIT}
-(OUT/'manifest-10.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
+manifest={'build':'dol-mobile-11','source_game_sha256':sha((ROOT/'game.html').read_bytes()),'core_sha256':sha(core),'core_bytes':len(core),'core':core_parts,'mods':mods,'artwork':report,'static_images':len(images),'unique_images':len(unique),'static_image_bytes':sum(unique.values()),'max_resource_bytes':LIMIT}
+(OUT/'manifest-11.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
 assert all(p['bytes']<=LIMIT for item in mods for p in item['parts'])
 assert all(p['bytes']<=LIMIT for p in core_parts)
 (OUT/'BUILD-CREDITS.md').write_text('Same 0.5.12.13 Chinese game and BESC+UCB artwork as game.html. Original credits and licenses are retained in the artwork provider. Artwork is served on demand without modifying image bytes.\n')
-page='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 手机加载入口</title><style>body{background:#111;color:#eee;font:18px/1.7 system-ui;max-width:38em;margin:auto;padding:24px}a{color:#9cf}progress{width:100%;height:24px}button{font:inherit;padding:12px;background:#333;color:white;border:1px solid #aaa}#error{color:#ffbba8;white-space:pre-wrap}</style></head><body><h1>DoL 汉化＋BESC/UCB</h1><p id="status" role="status">正在准备手机版资源……</p><progress id="progress" value="0" max="100"></progress><p id="detail"></p><p id="error" role="alert"></p><button id="retry" hidden>重试加载（保留存档）</button><p>资源分批加载，图片按显示需要读取。游戏和存档位置保持不变。</p><p><a href="backup.html">存档备份</a> · <a href="legacy.html">旧版导出存档</a> · <a href="online.html?build=dol-051213-chs101a-3">完整整合包入口</a></p><script src="save-backup.js?mobile=6"></script><script>HTTP_QUEUE_INLINE</script><script src="mobile-cache.js?mobile=10"></script><script src="mobile-loader.js?mobile=10"></script></body></html>'''
+page='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 手机加载入口</title><style>body{background:#111;color:#eee;font:18px/1.7 system-ui;max-width:38em;margin:auto;padding:24px}a{color:#9cf}progress{width:100%;height:24px}button{font:inherit;padding:12px;background:#333;color:white;border:1px solid #aaa}#error{color:#ffbba8;white-space:pre-wrap}</style></head><body><h1>DoL 汉化＋BESC/UCB</h1><p id="status" role="status">正在准备手机版资源……</p><progress id="progress" value="0" max="100"></progress><p id="detail"></p><p id="error" role="alert"></p><button id="retry" hidden>重试加载（保留存档）</button><p>资源分批加载，图片按显示需要读取。游戏和存档位置保持不变。</p><p><a href="backup.html">存档备份</a> · <a href="legacy.html">旧版导出存档</a> · <a href="online.html?build=dol-051213-chs101a-3">完整整合包入口</a></p><script src="save-backup.js?mobile=6"></script><script>HTTP_QUEUE_INLINE</script><script src="mobile-cache.js?mobile=11"></script><script src="mobile-loader.js?mobile=11"></script></body></html>'''
 page=page.replace('HTTP_QUEUE_INLINE',(ROOT/'http-queue.js').read_text())
 (ROOT/'mobile.html').write_text(page)
 # New visitors use the small shell; old binaries and offline downloads remain.
-entry='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 汉化美化版</title></head><body style="background:#111;color:#eee;font:18px/1.7 system-ui;padding:24px"><h1>DoL 汉化＋BESC/UCB</h1><p><a href="mobile.html?mobile=10" style="color:#9cf">打开手机版加载入口</a></p><p>正在进入。资源分批加载，图片按需读取，原存档位置不变。</p><p><a href="backup.html" style="color:#9cf">存档备份</a> · <a href="online.html?build=dol-051213-chs101a-3" style="color:#9cf">完整整合包入口</a></p><script>location.replace('mobile.html?mobile=10');</script></body></html>'''
+entry='''<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DoL 汉化美化版</title></head><body style="background:#111;color:#eee;font:18px/1.7 system-ui;padding:24px"><h1>DoL 汉化＋BESC/UCB</h1><p><a href="mobile.html?mobile=11" style="color:#9cf">打开手机版加载入口</a></p><p>正在进入。资源分批加载，图片按需读取，原存档位置不变。</p><p><a href="backup.html" style="color:#9cf">存档备份</a> · <a href="online.html?build=dol-051213-chs101a-3" style="color:#9cf">完整整合包入口</a></p><script>location.replace('mobile.html?mobile=11');</script></body></html>'''
 for name in ['index.html','play.html','launch.html','start.html']:(ROOT/name).write_text(entry)
 summary={k:manifest[k] for k in ['build','source_game_sha256','core_bytes','static_images','unique_images','static_image_bytes','max_resource_bytes']}
 summary.update(core_download_bytes=sum(p['bytes'] for p in core_parts),mod_download_bytes=sum(m['bytes'] for m in mods),html_entry_bytes=len(page.encode()))

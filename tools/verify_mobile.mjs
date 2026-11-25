@@ -57,7 +57,7 @@ try{
  await page.evaluate(()=>{localStorage.setItem('mobile-preserve-local','keep');sessionStorage.setItem('mobile-preserve-session','keep');});
  phase='mobile';errors.length=0;
  const coldStart=Date.now();
- await page.goto(base+'mobile.html?mobile=10',{waitUntil:'domcontentloaded',timeout:30000});await ready();
+ await page.goto(base+'mobile.html?mobile=11',{waitUntil:'domcontentloaded',timeout:30000});await ready();
  const coldMs=Date.now()-coldStart;
  assert.equal(await page.evaluate(()=>window.modSC2DataManager.getLanguageManager().mainLanguage),'zh');
  assert.equal(await page.evaluate(()=>window.DOLWebArtReport?.delivery),'static-on-demand');
@@ -81,7 +81,7 @@ try{
  await script("window.__saveState={money:V.money,marker:V.mobilePreserveMarker};");
  assert.deepEqual(await page.evaluate(()=>window.__saveState),{money:123456,marker:'keep-mobile-save'});
  assert.match(await page.locator('#passages').innerText(),/[\u4e00-\u9fff]{3}/);
- const manifest=JSON.parse(await fs.readFile('mobile/manifest-10.json','utf8'));
+ const manifest=JSON.parse(await fs.readFile('mobile/manifest-11.json','utf8'));
  const samples=await page.evaluate(async items=>{
   const result={};
   for(const [name,item] of Object.entries(items)){
@@ -255,14 +255,46 @@ try{
  assert.equal(backup.local,'keep');assert.ok(backup.saveRows>=1);
  // Open the real Chinese Other tab and operate the new controls.
  assert.deepEqual(await page.evaluate(()=>window.DOLWardrobeCapacity?.patchReport),{menu:true,furniture:true});
- const openWardrobe=async()=>{
+ const openOther=async()=>{
   await script('closeOverlay();UIBar.unstow(true);');
   await page.getByRole('button',{name:/^(作弊|CHEATS)$/i}).click();
   await page.getByRole('button',{name:/^(其它|其他|Other)$/}).click();
   await page.locator('#dol-wardrobe-capacity-controls').waitFor();
  };
- await openWardrobe();
+ await openOther();
  assert.ok((await page.locator('#customOverlayContent').innerText()).includes('时间与天气'),'existing cheat translation retained');
+ const timeSettings=page.locator('#customOverlayContent .settingsGrid').filter({
+  has:page.locator('.settingsHeader').filter({hasText:'时间与天气'}),
+ });
+ const freeze=timeSettings.getByRole('checkbox',{name:'时间不流逝'});
+ assert.equal(await freeze.isChecked(),false,'old saves start with the switch off');
+ const clock=()=>page.evaluate(()=>State.variables.timeStamp);
+ const startTime=await clock();
+ await freeze.check();
+ await script('window.__freezeSaved=Save.slots.save(1,"时间暂停验证");');
+ assert.equal(await page.evaluate(()=>window.__freezeSaved),true);
+ await script('closeOverlay();UIBar.stow(true);');
+ const hall=page.locator('#passages a[data-passage="Orphanage"]').first();
+ await hall.click();
+ await page.waitForFunction(()=>SugarCube.State.passage==='Orphanage');
+ assert.equal(await clock(),startTime,'the real one-minute trip to the hall kept the clock frozen');
+ await script('Time.pass(3600);');
+ assert.equal(await clock(),startTime,'waiting kept the clock frozen');
+ await script('window.__freezeLoaded=Save.slots.load(1);');
+ assert.equal(await page.evaluate(()=>window.__freezeLoaded),true);
+ await openOther();
+ assert.equal(await freeze.isChecked(),true,'saved freeze setting was restored');
+ await freeze.uncheck();
+ const resumeTime=await clock();
+ await script('window.__unfreezeSaved=Save.slots.save(1,"时间恢复验证");');
+ assert.equal(await page.evaluate(()=>window.__unfreezeSaved),true);
+ await script('Time.pass(300);');
+ assert.equal(await clock(),resumeTime+300,'clock resumes from the frozen time');
+ await script('Save.slots.load(1);');
+ await openOther();
+ assert.equal(await freeze.isChecked(),false,'saved off state was restored');
+ assert.deepEqual(await page.locator('#customOverlayContent .error').allTextContents(),[]);
+ console.log('PASS time freeze switch: default off, real travel and wait frozen, on/off saved and normal time restored.');
  const control=page.locator('#dol-wardrobe-capacity-controls');
  const capacity=async()=>Number(await page.locator('#dol-wardrobe-capacity-value').textContent());
  const originalCapacity=await capacity();
@@ -279,7 +311,7 @@ try{
  await script('Furniture.in("bedroom");Furniture.wardrobeUpdate();window.__wardrobeSpace=V.wardrobe.space;');
  assert.equal(await page.evaluate(()=>window.__wardrobeSpace),originalCapacity+20,'saved capacity restored');
  await script('V.wardrobe.upper=Array.from({length:25},()=>clone(V.worn.upper));window.__capacityFloor=window.DOLWardrobeCapacity.info(State.variables).minimum;window.DOLWardrobeCapacity.change(State.variables,window.__capacityFloor+3-V.wardrobe.space);window.__wardrobeItems=JSON.stringify(setup.clothes_all_slots.map(slot=>V.wardrobe[slot]));');
- await openWardrobe();
+ await openOther();
  await control.getByRole('link',{name:'−10',exact:true}).click();
  assert.equal(await capacity(),await page.evaluate(()=>window.__capacityFloor),'decrease stops at occupied slots');
  assert.equal(await control.getByRole('link',{name:'−1',exact:true}).count(),0);
@@ -300,7 +332,7 @@ try{
  await page.close();
  const warmPage=await context.newPage();
  const warmStart=Date.now();
- await warmPage.goto(base+'mobile.html?mobile=10',{waitUntil:'domcontentloaded'});
+ await warmPage.goto(base+'mobile.html?mobile=11',{waitUntil:'domcontentloaded'});
  await warmPage.waitForFunction(()=>window.SugarCube?.State?.passage,null,{timeout:90000});
  const warmMs=Date.now()-warmStart;
  assert.equal(warmRequests,0);
