@@ -273,7 +273,7 @@ try{
  await freeze.check();
  await script('window.__freezeSaved=Save.slots.save(1,"时间暂停验证");');
  assert.equal(await page.evaluate(()=>window.__freezeSaved),true);
- await script('closeOverlay();');
+ await script('closeOverlay();UIBar.stow(true);');
  const hall=page.locator('#passages a[data-passage="Orphanage"]').first();
  await hall.click();
  await page.waitForFunction(()=>SugarCube.State.passage==='Orphanage');
