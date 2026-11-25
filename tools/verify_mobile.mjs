@@ -287,8 +287,8 @@ try{
  await openOther();
  await page.locator('#dol-wardrobe-capacity-controls button[data-passage="Wardrobe"]').click();
  await page.waitForFunction(()=>SugarCube.State.passage==='Wardrobe');
- await page.locator('#wardrobewear').waitFor();
- await page.locator('#wardrobe-options-div').waitFor();
+ await page.locator('#wardrobewear').waitFor({state:'attached'});
+ await page.locator('#wardrobe-options-div').waitFor({state:'attached'});
  assert.equal(await page.evaluate(()=>State.variables.wardrobe_location),'wardrobe');
  assert.equal(await page.evaluate(()=>State.variables.location),origin,'wardrobe shortcut retains world location');
  assert.deepEqual(await page.locator('#passages .error').allTextContents(),[]);
